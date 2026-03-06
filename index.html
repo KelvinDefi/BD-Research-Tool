@@ -1,0 +1,2747 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Web3 BD Research Tool | KN Intelligence</title>
+  <link href="https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@300;400;500;600;700&family=Inter:wght@300;400;500;600&display=swap" rel="stylesheet">
+  <style>
+    /* ============================================================
+       RESET & BASE
+    ============================================================ */
+    *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+
+    :root {
+      --bg:        #0A0F1E;
+      --bg2:       #0D1326;
+      --bg3:       #111827;
+      --card:      #0F1629;
+      --card-b:    #1A2340;
+      --purple:    #7C3AED;
+      --purple-l:  #9D60FF;
+      --cyan:      #06B6D4;
+      --cyan-l:    #22D3EE;
+      --green:     #10B981;
+      --yellow:    #F59E0B;
+      --red:       #EF4444;
+      --text:      #E2E8F0;
+      --text-m:    #94A3B8;
+      --text-dim:  #475569;
+      --border:    rgba(124,58,237,0.18);
+      --border2:   rgba(6,182,212,0.15);
+      --glow-p:    0 0 20px rgba(124,58,237,0.35);
+      --glow-c:    0 0 20px rgba(6,182,212,0.35);
+      --radius:    12px;
+      --radius-sm: 8px;
+    }
+
+    html { scroll-behavior: smooth; }
+
+    body {
+      font-family: 'Inter', sans-serif;
+      background: var(--bg);
+      color: var(--text);
+      min-height: 100vh;
+      overflow-x: hidden;
+      position: relative;
+    }
+
+    /* Grid background */
+    body::before {
+      content: '';
+      position: fixed;
+      inset: 0;
+      background-image:
+        linear-gradient(rgba(124,58,237,0.04) 1px, transparent 1px),
+        linear-gradient(90deg, rgba(124,58,237,0.04) 1px, transparent 1px);
+      background-size: 48px 48px;
+      pointer-events: none;
+      z-index: 0;
+    }
+
+    /* Radial accent glow */
+    body::after {
+      content: '';
+      position: fixed;
+      top: -20%;
+      left: 50%;
+      transform: translateX(-50%);
+      width: 800px;
+      height: 500px;
+      background: radial-gradient(ellipse at center,
+        rgba(124,58,237,0.08) 0%,
+        rgba(6,182,212,0.04) 50%,
+        transparent 70%);
+      pointer-events: none;
+      z-index: 0;
+    }
+
+    /* ============================================================
+       SCROLLBAR
+    ============================================================ */
+    ::-webkit-scrollbar { width: 6px; }
+    ::-webkit-scrollbar-track { background: var(--bg2); }
+    ::-webkit-scrollbar-thumb { background: var(--purple); border-radius: 3px; }
+
+    /* ============================================================
+       LAYOUT WRAPPER
+    ============================================================ */
+    .app {
+      position: relative;
+      z-index: 1;
+      max-width: 1280px;
+      margin: 0 auto;
+      padding: 0 24px 80px;
+    }
+
+    /* ============================================================
+       HEADER
+    ============================================================ */
+    header {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      padding: 24px 0 16px;
+      border-bottom: 1px solid var(--border);
+      margin-bottom: 0;
+    }
+
+    .logo {
+      display: flex;
+      align-items: center;
+      gap: 12px;
+    }
+
+    .logo-badge {
+      width: 40px;
+      height: 40px;
+      background: linear-gradient(135deg, var(--purple), var(--cyan));
+      border-radius: 10px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-family: 'Space Grotesk', sans-serif;
+      font-weight: 700;
+      font-size: 16px;
+      color: #fff;
+      box-shadow: var(--glow-p);
+      flex-shrink: 0;
+    }
+
+    .logo-text {
+      font-family: 'Space Grotesk', sans-serif;
+    }
+
+    .logo-text h1 {
+      font-size: 17px;
+      font-weight: 700;
+      background: linear-gradient(90deg, #fff, var(--cyan-l));
+      -webkit-background-clip: text;
+      -webkit-text-fill-color: transparent;
+      background-clip: text;
+      letter-spacing: 0.3px;
+    }
+
+    .logo-text p {
+      font-size: 11px;
+      color: var(--text-dim);
+      letter-spacing: 1.5px;
+      text-transform: uppercase;
+      margin-top: 1px;
+    }
+
+    .header-actions {
+      display: flex;
+      align-items: center;
+      gap: 10px;
+    }
+
+    .btn-ghost {
+      background: rgba(255,255,255,0.04);
+      border: 1px solid var(--border);
+      color: var(--text-m);
+      padding: 8px 16px;
+      border-radius: var(--radius-sm);
+      font-family: 'Inter', sans-serif;
+      font-size: 13px;
+      font-weight: 500;
+      cursor: pointer;
+      transition: all 0.2s;
+      display: flex;
+      align-items: center;
+      gap: 7px;
+    }
+
+    .btn-ghost:hover {
+      border-color: var(--purple);
+      color: var(--text);
+      background: rgba(124,58,237,0.08);
+    }
+
+    .btn-ghost svg { width: 15px; height: 15px; }
+
+    /* ============================================================
+       API KEY BANNER
+    ============================================================ */
+    .api-banner {
+      background: linear-gradient(135deg, rgba(124,58,237,0.1), rgba(6,182,212,0.05));
+      border: 1px solid var(--border);
+      border-radius: var(--radius);
+      padding: 16px 20px;
+      margin: 20px 0;
+      display: flex;
+      align-items: center;
+      gap: 16px;
+      flex-wrap: wrap;
+    }
+
+    .api-banner-text {
+      flex: 1;
+      min-width: 200px;
+    }
+
+    .api-banner-text p {
+      font-size: 13px;
+      color: var(--text-m);
+      line-height: 1.5;
+    }
+
+    .api-banner-text strong {
+      color: var(--cyan-l);
+      font-size: 14px;
+    }
+
+    .api-key-form {
+      display: flex;
+      gap: 8px;
+      flex: 2;
+      min-width: 300px;
+    }
+
+    .api-key-form input {
+      flex: 1;
+      background: rgba(0,0,0,0.3);
+      border: 1px solid var(--border);
+      border-radius: var(--radius-sm);
+      color: var(--text);
+      padding: 9px 14px;
+      font-family: 'Inter', sans-serif;
+      font-size: 13px;
+      outline: none;
+      transition: border-color 0.2s;
+    }
+
+    .api-key-form input:focus { border-color: var(--purple); }
+    .api-key-form input::placeholder { color: var(--text-dim); }
+
+    .btn-save-key {
+      background: linear-gradient(135deg, var(--purple), #6D28D9);
+      border: none;
+      color: #fff;
+      padding: 9px 18px;
+      border-radius: var(--radius-sm);
+      font-size: 13px;
+      font-weight: 600;
+      cursor: pointer;
+      transition: all 0.2s;
+      white-space: nowrap;
+      font-family: 'Inter', sans-serif;
+    }
+
+    .btn-save-key:hover {
+      background: linear-gradient(135deg, var(--purple-l), var(--purple));
+      box-shadow: var(--glow-p);
+    }
+
+    .api-status {
+      display: flex;
+      align-items: center;
+      gap: 6px;
+      font-size: 12px;
+      font-weight: 500;
+      padding: 5px 12px;
+      border-radius: 20px;
+    }
+
+    .api-status.active {
+      background: rgba(16,185,129,0.12);
+      color: var(--green);
+      border: 1px solid rgba(16,185,129,0.25);
+    }
+
+    .api-status.inactive {
+      background: rgba(239,68,68,0.1);
+      color: var(--red);
+      border: 1px solid rgba(239,68,68,0.2);
+    }
+
+    .api-status .dot {
+      width: 7px;
+      height: 7px;
+      border-radius: 50%;
+      background: currentColor;
+    }
+
+    /* ============================================================
+       SEARCH SECTION
+    ============================================================ */
+    .search-section {
+      padding: 48px 0 40px;
+      text-align: center;
+    }
+
+    .search-eyebrow {
+      font-size: 11px;
+      letter-spacing: 3px;
+      text-transform: uppercase;
+      color: var(--cyan);
+      font-weight: 600;
+      margin-bottom: 12px;
+    }
+
+    .search-title {
+      font-family: 'Space Grotesk', sans-serif;
+      font-size: clamp(28px, 4vw, 44px);
+      font-weight: 700;
+      line-height: 1.15;
+      margin-bottom: 14px;
+    }
+
+    .search-title .title-gradient {
+      background: linear-gradient(90deg, var(--purple-l), var(--cyan-l));
+      -webkit-background-clip: text;
+      -webkit-text-fill-color: transparent;
+      background-clip: text;
+    }
+
+    .search-subtitle {
+      font-size: 15px;
+      color: var(--text-m);
+      margin-bottom: 36px;
+      max-width: 480px;
+      margin-left: auto;
+      margin-right: auto;
+      line-height: 1.6;
+    }
+
+    .search-box {
+      display: flex;
+      max-width: 620px;
+      margin: 0 auto;
+      gap: 10px;
+      position: relative;
+    }
+
+    .search-input-wrap {
+      flex: 1;
+      position: relative;
+    }
+
+    .search-input-wrap svg {
+      position: absolute;
+      left: 16px;
+      top: 50%;
+      transform: translateY(-50%);
+      color: var(--text-dim);
+      width: 18px;
+      height: 18px;
+      pointer-events: none;
+    }
+
+    #searchInput {
+      width: 100%;
+      background: var(--card);
+      border: 1.5px solid var(--border);
+      border-radius: var(--radius);
+      color: var(--text);
+      padding: 16px 20px 16px 48px;
+      font-family: 'Inter', sans-serif;
+      font-size: 15px;
+      outline: none;
+      transition: all 0.25s;
+    }
+
+    #searchInput:focus {
+      border-color: var(--purple);
+      box-shadow: 0 0 0 3px rgba(124,58,237,0.15), var(--glow-p);
+      background: rgba(15,22,41,0.95);
+    }
+
+    #searchInput::placeholder { color: var(--text-dim); }
+
+    .btn-search {
+      background: linear-gradient(135deg, var(--purple) 0%, #6D28D9 50%, var(--cyan) 100%);
+      background-size: 200% 200%;
+      border: none;
+      color: #fff;
+      padding: 16px 28px;
+      border-radius: var(--radius);
+      font-family: 'Space Grotesk', sans-serif;
+      font-size: 14px;
+      font-weight: 700;
+      letter-spacing: 0.5px;
+      cursor: pointer;
+      transition: all 0.3s;
+      white-space: nowrap;
+      text-transform: uppercase;
+      position: relative;
+      overflow: hidden;
+    }
+
+    .btn-search::before {
+      content: '';
+      position: absolute;
+      inset: 0;
+      background: linear-gradient(135deg, rgba(255,255,255,0.1), transparent);
+      opacity: 0;
+      transition: opacity 0.2s;
+    }
+
+    .btn-search:hover {
+      box-shadow: 0 0 30px rgba(124,58,237,0.5), 0 0 60px rgba(6,182,212,0.2);
+      background-position: right center;
+      transform: translateY(-1px);
+    }
+
+    .btn-search:hover::before { opacity: 1; }
+    .btn-search:active { transform: translateY(0); }
+    .btn-search:disabled { opacity: 0.5; cursor: not-allowed; transform: none; }
+
+    .search-examples {
+      margin-top: 16px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      gap: 8px;
+      flex-wrap: wrap;
+    }
+
+    .search-examples span {
+      font-size: 12px;
+      color: var(--text-dim);
+    }
+
+    .example-chip {
+      font-size: 12px;
+      color: var(--cyan);
+      background: rgba(6,182,212,0.08);
+      border: 1px solid rgba(6,182,212,0.2);
+      padding: 4px 10px;
+      border-radius: 20px;
+      cursor: pointer;
+      transition: all 0.2s;
+      font-weight: 500;
+    }
+
+    .example-chip:hover {
+      background: rgba(6,182,212,0.15);
+      color: var(--cyan-l);
+    }
+
+    /* ============================================================
+       LOADING STATE
+    ============================================================ */
+    .loading-state {
+      display: none;
+      padding: 60px 0;
+      text-align: center;
+    }
+
+    .loading-state.active { display: block; }
+
+    .scan-container {
+      max-width: 500px;
+      margin: 0 auto 28px;
+      background: var(--card);
+      border: 1px solid var(--border);
+      border-radius: var(--radius);
+      padding: 28px;
+      position: relative;
+      overflow: hidden;
+    }
+
+    .scan-line {
+      position: absolute;
+      left: 0;
+      right: 0;
+      height: 2px;
+      background: linear-gradient(90deg, transparent, var(--cyan), var(--purple), var(--cyan), transparent);
+      top: 0;
+      animation: scanDown 2s ease-in-out infinite;
+      box-shadow: 0 0 12px var(--cyan);
+    }
+
+    @keyframes scanDown {
+      0% { top: 0; opacity: 1; }
+      100% { top: 100%; opacity: 0.3; }
+    }
+
+    .scan-icon {
+      width: 60px;
+      height: 60px;
+      margin: 0 auto 16px;
+      position: relative;
+    }
+
+    .scan-icon-inner {
+      width: 100%;
+      height: 100%;
+      border: 2px solid var(--purple);
+      border-radius: 50%;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      animation: pulse-ring 1.5s ease-in-out infinite;
+    }
+
+    @keyframes pulse-ring {
+      0%, 100% { box-shadow: 0 0 0 0 rgba(124,58,237,0.4); }
+      50% { box-shadow: 0 0 0 12px rgba(124,58,237,0); }
+    }
+
+    .scan-icon svg {
+      width: 28px;
+      height: 28px;
+      color: var(--purple-l);
+      animation: spin 3s linear infinite;
+    }
+
+    @keyframes spin { to { transform: rotate(360deg); } }
+
+    .loading-title {
+      font-family: 'Space Grotesk', sans-serif;
+      font-size: 20px;
+      font-weight: 600;
+      color: var(--text);
+      margin-bottom: 8px;
+    }
+
+    .loading-status {
+      font-size: 13px;
+      color: var(--cyan);
+      animation: blink 1.2s ease-in-out infinite;
+    }
+
+    @keyframes blink {
+      0%, 100% { opacity: 1; }
+      50% { opacity: 0.4; }
+    }
+
+    .loading-steps {
+      display: flex;
+      flex-direction: column;
+      gap: 6px;
+      margin-top: 20px;
+      text-align: left;
+    }
+
+    .loading-step {
+      display: flex;
+      align-items: center;
+      gap: 10px;
+      font-size: 12px;
+      color: var(--text-dim);
+      padding: 5px 0;
+      transition: color 0.3s;
+    }
+
+    .loading-step.done { color: var(--green); }
+    .loading-step.active { color: var(--cyan-l); }
+
+    .step-dot {
+      width: 8px;
+      height: 8px;
+      border-radius: 50%;
+      background: var(--text-dim);
+      flex-shrink: 0;
+      transition: background 0.3s;
+    }
+
+    .loading-step.done .step-dot { background: var(--green); }
+    .loading-step.active .step-dot {
+      background: var(--cyan);
+      box-shadow: 0 0 8px var(--cyan);
+      animation: pulse-dot 0.8s ease-in-out infinite;
+    }
+
+    @keyframes pulse-dot {
+      0%, 100% { transform: scale(1); }
+      50% { transform: scale(1.4); }
+    }
+
+    /* ============================================================
+       SKELETON
+    ============================================================ */
+    .skeleton-grid {
+      display: none;
+      grid-template-columns: repeat(12, 1fr);
+      gap: 16px;
+      margin-top: 0;
+    }
+
+    .skeleton-grid.active { display: grid; }
+
+    .skeleton-card {
+      background: var(--card);
+      border: 1px solid var(--border);
+      border-radius: var(--radius);
+      padding: 24px;
+      overflow: hidden;
+      position: relative;
+    }
+
+    .skeleton-card::after {
+      content: '';
+      position: absolute;
+      inset: 0;
+      background: linear-gradient(90deg, transparent 0%, rgba(255,255,255,0.04) 50%, transparent 100%);
+      animation: shimmer 1.5s ease-in-out infinite;
+      background-size: 200% 100%;
+    }
+
+    @keyframes shimmer {
+      0% { background-position: -200% 0; }
+      100% { background-position: 200% 0; }
+    }
+
+    .skel-line {
+      height: 12px;
+      background: var(--card-b);
+      border-radius: 6px;
+      margin-bottom: 10px;
+    }
+
+    .skel-line.w-40 { width: 40%; }
+    .skel-line.w-60 { width: 60%; }
+    .skel-line.w-80 { width: 80%; }
+    .skel-line.w-full { width: 100%; }
+    .skel-line.h-20 { height: 20px; margin-bottom: 14px; }
+
+    /* ============================================================
+       RESULTS SECTION
+    ============================================================ */
+    #results {
+      display: none;
+    }
+
+    #results.active { display: block; }
+
+    .results-header {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      margin-bottom: 20px;
+      flex-wrap: wrap;
+      gap: 12px;
+    }
+
+    .results-meta {
+      display: flex;
+      align-items: center;
+      gap: 10px;
+    }
+
+    .results-meta h2 {
+      font-family: 'Space Grotesk', sans-serif;
+      font-size: 22px;
+      font-weight: 700;
+    }
+
+    .live-badge {
+      display: flex;
+      align-items: center;
+      gap: 5px;
+      background: rgba(16,185,129,0.1);
+      border: 1px solid rgba(16,185,129,0.25);
+      color: var(--green);
+      font-size: 11px;
+      font-weight: 600;
+      letter-spacing: 1px;
+      padding: 4px 10px;
+      border-radius: 20px;
+      text-transform: uppercase;
+    }
+
+    .live-dot {
+      width: 6px;
+      height: 6px;
+      border-radius: 50%;
+      background: var(--green);
+      animation: pulse-dot 1s ease-in-out infinite;
+    }
+
+    .results-actions {
+      display: flex;
+      gap: 8px;
+    }
+
+    .btn-action {
+      display: flex;
+      align-items: center;
+      gap: 7px;
+      background: rgba(255,255,255,0.04);
+      border: 1px solid var(--border);
+      color: var(--text-m);
+      padding: 9px 16px;
+      border-radius: var(--radius-sm);
+      font-size: 13px;
+      font-weight: 500;
+      cursor: pointer;
+      transition: all 0.2s;
+      font-family: 'Inter', sans-serif;
+    }
+
+    .btn-action:hover {
+      border-color: var(--cyan);
+      color: var(--cyan-l);
+      background: rgba(6,182,212,0.06);
+    }
+
+    .btn-action.save:hover {
+      border-color: var(--purple);
+      color: var(--purple-l);
+      background: rgba(124,58,237,0.06);
+    }
+
+    .btn-action svg { width: 14px; height: 14px; }
+
+    /* ============================================================
+       CARDS GRID
+    ============================================================ */
+    .cards-grid {
+      display: grid;
+      grid-template-columns: repeat(12, 1fr);
+      gap: 16px;
+      margin-bottom: 20px;
+    }
+
+    .card {
+      background: var(--card);
+      border: 1px solid var(--border);
+      border-radius: var(--radius);
+      padding: 22px;
+      position: relative;
+      overflow: hidden;
+      transition: border-color 0.2s, box-shadow 0.2s;
+    }
+
+    .card:hover {
+      border-color: rgba(124,58,237,0.35);
+      box-shadow: 0 4px 24px rgba(124,58,237,0.08);
+    }
+
+    .card::before {
+      content: '';
+      position: absolute;
+      top: 0;
+      left: 0;
+      right: 0;
+      height: 2px;
+      background: linear-gradient(90deg, var(--purple), var(--cyan));
+      opacity: 0;
+      transition: opacity 0.2s;
+    }
+
+    .card:hover::before { opacity: 1; }
+
+    /* Card span classes */
+    .col-4  { grid-column: span 4; }
+    .col-5  { grid-column: span 5; }
+    .col-6  { grid-column: span 6; }
+    .col-7  { grid-column: span 7; }
+    .col-8  { grid-column: span 8; }
+    .col-12 { grid-column: span 12; }
+
+    @media (max-width: 1024px) {
+      .col-4, .col-5, .col-7, .col-8 { grid-column: span 6; }
+    }
+
+    @media (max-width: 768px) {
+      .col-4, .col-5, .col-6, .col-7, .col-8, .col-12 { grid-column: span 12; }
+    }
+
+    /* ============================================================
+       CARD INTERNALS
+    ============================================================ */
+    .card-header {
+      display: flex;
+      align-items: center;
+      gap: 10px;
+      margin-bottom: 18px;
+    }
+
+    .card-icon {
+      width: 34px;
+      height: 34px;
+      border-radius: 8px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      flex-shrink: 0;
+    }
+
+    .card-icon svg { width: 17px; height: 17px; }
+
+    .icon-purple { background: rgba(124,58,237,0.15); color: var(--purple-l); }
+    .icon-cyan   { background: rgba(6,182,212,0.12);  color: var(--cyan-l);   }
+    .icon-green  { background: rgba(16,185,129,0.12); color: var(--green);    }
+    .icon-yellow { background: rgba(245,158,11,0.12); color: var(--yellow);   }
+    .icon-red    { background: rgba(239,68,68,0.1);   color: var(--red);      }
+
+    .card-title {
+      font-family: 'Space Grotesk', sans-serif;
+      font-size: 13px;
+      font-weight: 600;
+      text-transform: uppercase;
+      letter-spacing: 1px;
+      color: var(--text-m);
+    }
+
+    /* Data rows */
+    .data-row {
+      display: flex;
+      align-items: flex-start;
+      justify-content: space-between;
+      padding: 8px 0;
+      border-bottom: 1px solid rgba(255,255,255,0.04);
+      gap: 12px;
+    }
+
+    .data-row:last-child { border-bottom: none; padding-bottom: 0; }
+    .data-row:first-of-type { padding-top: 0; }
+
+    .data-label {
+      font-size: 12px;
+      color: var(--text-dim);
+      font-weight: 500;
+      flex-shrink: 0;
+      padding-top: 1px;
+    }
+
+    .data-value {
+      font-size: 13px;
+      color: var(--text);
+      font-weight: 500;
+      text-align: right;
+      word-break: break-word;
+    }
+
+    .data-value a {
+      color: var(--cyan);
+      text-decoration: none;
+    }
+
+    .data-value a:hover { color: var(--cyan-l); text-decoration: underline; }
+
+    /* Badges */
+    .badge {
+      display: inline-flex;
+      align-items: center;
+      padding: 3px 9px;
+      border-radius: 12px;
+      font-size: 11px;
+      font-weight: 600;
+      letter-spacing: 0.3px;
+    }
+
+    .badge-purple { background: rgba(124,58,237,0.15); color: var(--purple-l); border: 1px solid rgba(124,58,237,0.25); }
+    .badge-cyan   { background: rgba(6,182,212,0.1);   color: var(--cyan-l);   border: 1px solid rgba(6,182,212,0.2);   }
+    .badge-green  { background: rgba(16,185,129,0.1);  color: var(--green);    border: 1px solid rgba(16,185,129,0.2);  }
+    .badge-yellow { background: rgba(245,158,11,0.1);  color: var(--yellow);   border: 1px solid rgba(245,158,11,0.2);  }
+    .badge-red    { background: rgba(239,68,68,0.08);  color: var(--red);      border: 1px solid rgba(239,68,68,0.15);  }
+    .badge-gray   { background: rgba(148,163,184,0.1); color: var(--text-m);   border: 1px solid rgba(148,163,184,0.15);}
+
+    /* Tags list */
+    .tags-wrap {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 5px;
+      justify-content: flex-end;
+    }
+
+    /* Project name header in overview card */
+    .project-name-display {
+      font-family: 'Space Grotesk', sans-serif;
+      font-size: 24px;
+      font-weight: 700;
+      margin-bottom: 4px;
+      background: linear-gradient(90deg, #fff 0%, var(--cyan-l) 100%);
+      -webkit-background-clip: text;
+      -webkit-text-fill-color: transparent;
+      background-clip: text;
+    }
+
+    .project-handle {
+      font-size: 13px;
+      color: var(--text-dim);
+      margin-bottom: 18px;
+    }
+
+    /* Score indicator */
+    .score-display {
+      display: flex;
+      align-items: center;
+      gap: 12px;
+      margin-top: 4px;
+    }
+
+    .score-number {
+      font-family: 'Space Grotesk', sans-serif;
+      font-size: 32px;
+      font-weight: 700;
+      line-height: 1;
+    }
+
+    .score-bar-wrap {
+      flex: 1;
+    }
+
+    .score-label-sm {
+      font-size: 11px;
+      color: var(--text-dim);
+      margin-bottom: 6px;
+    }
+
+    .score-bar {
+      height: 6px;
+      background: rgba(255,255,255,0.06);
+      border-radius: 3px;
+      overflow: hidden;
+    }
+
+    .score-bar-fill {
+      height: 100%;
+      border-radius: 3px;
+      transition: width 1s ease;
+    }
+
+    .score-high   { color: var(--green); }
+    .score-mid    { color: var(--yellow); }
+    .score-low    { color: var(--red); }
+    .fill-high    { background: linear-gradient(90deg, var(--green), #34D399); }
+    .fill-mid     { background: linear-gradient(90deg, var(--yellow), #FCD34D); }
+    .fill-low     { background: linear-gradient(90deg, var(--red), #FC8181); }
+
+    /* Token data big numbers */
+    .token-stats {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 14px;
+      margin-top: 4px;
+    }
+
+    .token-stat {
+      background: rgba(0,0,0,0.2);
+      border: 1px solid rgba(255,255,255,0.05);
+      border-radius: 8px;
+      padding: 12px;
+    }
+
+    .token-stat-label {
+      font-size: 10px;
+      text-transform: uppercase;
+      letter-spacing: 1px;
+      color: var(--text-dim);
+      margin-bottom: 5px;
+    }
+
+    .token-stat-value {
+      font-family: 'Space Grotesk', sans-serif;
+      font-size: 18px;
+      font-weight: 700;
+      color: var(--text);
+    }
+
+    .token-stat-value.green { color: var(--green); }
+    .token-stat-value.cyan  { color: var(--cyan-l); }
+
+    /* Campaign tags */
+    .campaign-tag {
+      display: inline-flex;
+      align-items: center;
+      gap: 5px;
+      background: rgba(124,58,237,0.1);
+      border: 1px solid rgba(124,58,237,0.2);
+      color: var(--purple-l);
+      padding: 4px 10px;
+      border-radius: 6px;
+      font-size: 12px;
+      font-weight: 500;
+    }
+
+    /* Social links */
+    .social-links {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 6px;
+      margin-top: 4px;
+    }
+
+    .social-link {
+      display: inline-flex;
+      align-items: center;
+      gap: 5px;
+      background: rgba(6,182,212,0.08);
+      border: 1px solid rgba(6,182,212,0.15);
+      color: var(--cyan-l);
+      padding: 4px 10px;
+      border-radius: 6px;
+      font-size: 12px;
+      font-weight: 500;
+      text-decoration: none;
+      transition: all 0.2s;
+    }
+
+    .social-link:hover {
+      background: rgba(6,182,212,0.15);
+      border-color: var(--cyan);
+    }
+
+    /* ============================================================
+       BD RECOMMENDATIONS
+    ============================================================ */
+    .bd-section {
+      background: var(--card);
+      border: 1px solid var(--border);
+      border-radius: var(--radius);
+      overflow: hidden;
+      margin-top: 4px;
+    }
+
+    .bd-section-header {
+      background: linear-gradient(135deg, rgba(124,58,237,0.15), rgba(6,182,212,0.08));
+      border-bottom: 1px solid var(--border);
+      padding: 20px 24px;
+      display: flex;
+      align-items: flex-start;
+      gap: 16px;
+    }
+
+    .bd-header-icon {
+      width: 44px;
+      height: 44px;
+      background: linear-gradient(135deg, var(--purple), var(--cyan));
+      border-radius: 10px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      flex-shrink: 0;
+      box-shadow: var(--glow-p);
+    }
+
+    .bd-header-icon svg { width: 22px; height: 22px; color: #fff; }
+
+    .bd-header-text h3 {
+      font-family: 'Space Grotesk', sans-serif;
+      font-size: 18px;
+      font-weight: 700;
+      margin-bottom: 4px;
+    }
+
+    .bd-header-text p {
+      font-size: 13px;
+      color: var(--text-m);
+    }
+
+    .top-recommendation {
+      padding: 20px 24px;
+      border-bottom: 1px solid var(--border);
+      background: rgba(124,58,237,0.04);
+    }
+
+    .top-rec-label {
+      font-size: 11px;
+      text-transform: uppercase;
+      letter-spacing: 1.5px;
+      color: var(--purple-l);
+      font-weight: 600;
+      margin-bottom: 8px;
+      display: flex;
+      align-items: center;
+      gap: 6px;
+    }
+
+    .top-rec-service {
+      font-family: 'Space Grotesk', sans-serif;
+      font-size: 22px;
+      font-weight: 700;
+      color: #fff;
+      margin-bottom: 8px;
+    }
+
+    .top-rec-reasoning {
+      font-size: 14px;
+      color: var(--text-m);
+      line-height: 1.6;
+      max-width: 800px;
+    }
+
+    .bd-services-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fill, minmax(340px, 1fr));
+      gap: 1px;
+      background: var(--border);
+    }
+
+    .bd-service-card {
+      background: var(--card);
+      padding: 20px 24px;
+      transition: background 0.2s;
+    }
+
+    .bd-service-card:hover {
+      background: rgba(124,58,237,0.04);
+    }
+
+    .bd-service-top {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      margin-bottom: 10px;
+    }
+
+    .bd-service-num {
+      font-size: 11px;
+      color: var(--text-dim);
+      font-weight: 600;
+      letter-spacing: 1px;
+    }
+
+    .priority-badge {
+      padding: 3px 10px;
+      border-radius: 12px;
+      font-size: 11px;
+      font-weight: 700;
+      letter-spacing: 0.5px;
+      text-transform: uppercase;
+    }
+
+    .priority-HIGH   { background: rgba(239,68,68,0.1);   color: var(--red);    border: 1px solid rgba(239,68,68,0.25);   }
+    .priority-MEDIUM { background: rgba(245,158,11,0.1);  color: var(--yellow); border: 1px solid rgba(245,158,11,0.25);  }
+    .priority-LOW    { background: rgba(16,185,129,0.08); color: var(--green);  border: 1px solid rgba(16,185,129,0.2);   }
+
+    .bd-service-name {
+      font-family: 'Space Grotesk', sans-serif;
+      font-size: 16px;
+      font-weight: 600;
+      margin-bottom: 8px;
+      color: var(--text);
+    }
+
+    .bd-service-reason {
+      font-size: 13px;
+      color: var(--text-m);
+      line-height: 1.55;
+      margin-bottom: 10px;
+    }
+
+    .bd-service-impact {
+      display: flex;
+      align-items: flex-start;
+      gap: 8px;
+      background: rgba(6,182,212,0.05);
+      border: 1px solid rgba(6,182,212,0.1);
+      border-radius: 6px;
+      padding: 8px 12px;
+    }
+
+    .impact-icon {
+      color: var(--cyan);
+      font-size: 14px;
+      flex-shrink: 0;
+      margin-top: 1px;
+    }
+
+    .impact-text {
+      font-size: 12px;
+      color: var(--cyan-l);
+      line-height: 1.5;
+    }
+
+    /* ============================================================
+       ERROR STATE
+    ============================================================ */
+    .error-state {
+      display: none;
+      text-align: center;
+      padding: 60px 20px;
+    }
+
+    .error-state.active { display: block; }
+
+    .error-icon {
+      width: 64px;
+      height: 64px;
+      background: rgba(239,68,68,0.1);
+      border-radius: 50%;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      margin: 0 auto 16px;
+    }
+
+    .error-icon svg { width: 32px; height: 32px; color: var(--red); }
+
+    .error-title {
+      font-family: 'Space Grotesk', sans-serif;
+      font-size: 20px;
+      font-weight: 600;
+      margin-bottom: 8px;
+    }
+
+    .error-msg {
+      font-size: 14px;
+      color: var(--text-m);
+      max-width: 400px;
+      margin: 0 auto 20px;
+      line-height: 1.6;
+    }
+
+    .btn-retry {
+      background: rgba(124,58,237,0.15);
+      border: 1px solid rgba(124,58,237,0.3);
+      color: var(--purple-l);
+      padding: 10px 22px;
+      border-radius: var(--radius-sm);
+      font-size: 14px;
+      font-weight: 600;
+      cursor: pointer;
+      transition: all 0.2s;
+      font-family: 'Inter', sans-serif;
+    }
+
+    .btn-retry:hover {
+      background: rgba(124,58,237,0.25);
+    }
+
+    /* ============================================================
+       HISTORY SIDEBAR
+    ============================================================ */
+    .history-overlay {
+      position: fixed;
+      inset: 0;
+      background: rgba(0,0,0,0.6);
+      z-index: 100;
+      opacity: 0;
+      pointer-events: none;
+      transition: opacity 0.3s;
+      backdrop-filter: blur(4px);
+    }
+
+    .history-overlay.open {
+      opacity: 1;
+      pointer-events: all;
+    }
+
+    .history-sidebar {
+      position: fixed;
+      top: 0;
+      right: 0;
+      width: 360px;
+      height: 100vh;
+      background: var(--bg2);
+      border-left: 1px solid var(--border);
+      z-index: 101;
+      transform: translateX(100%);
+      transition: transform 0.35s cubic-bezier(0.4, 0, 0.2, 1);
+      display: flex;
+      flex-direction: column;
+    }
+
+    .history-sidebar.open { transform: translateX(0); }
+
+    .history-sidebar-header {
+      padding: 20px 20px 16px;
+      border-bottom: 1px solid var(--border);
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      flex-shrink: 0;
+    }
+
+    .history-sidebar-header h3 {
+      font-family: 'Space Grotesk', sans-serif;
+      font-size: 16px;
+      font-weight: 600;
+    }
+
+    .btn-close-sidebar {
+      background: rgba(255,255,255,0.05);
+      border: 1px solid var(--border);
+      color: var(--text-m);
+      width: 30px;
+      height: 30px;
+      border-radius: 6px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      cursor: pointer;
+      transition: all 0.2s;
+      font-size: 18px;
+      line-height: 1;
+    }
+
+    .btn-close-sidebar:hover {
+      border-color: var(--red);
+      color: var(--red);
+    }
+
+    .history-list {
+      flex: 1;
+      overflow-y: auto;
+      padding: 12px;
+    }
+
+    .history-empty {
+      text-align: center;
+      padding: 40px 20px;
+      color: var(--text-dim);
+      font-size: 13px;
+    }
+
+    .history-item {
+      background: var(--card);
+      border: 1px solid var(--border);
+      border-radius: var(--radius-sm);
+      padding: 14px;
+      margin-bottom: 8px;
+      cursor: pointer;
+      transition: all 0.2s;
+      position: relative;
+    }
+
+    .history-item:hover {
+      border-color: var(--purple);
+      background: rgba(124,58,237,0.05);
+    }
+
+    .history-item-top {
+      display: flex;
+      align-items: flex-start;
+      justify-content: space-between;
+      gap: 8px;
+      margin-bottom: 6px;
+    }
+
+    .history-project-name {
+      font-weight: 600;
+      font-size: 14px;
+      color: var(--text);
+    }
+
+    .history-date {
+      font-size: 11px;
+      color: var(--text-dim);
+      white-space: nowrap;
+    }
+
+    .history-handle {
+      font-size: 12px;
+      color: var(--cyan);
+      margin-bottom: 6px;
+    }
+
+    .history-top-rec {
+      font-size: 11px;
+      color: var(--text-dim);
+      display: flex;
+      align-items: center;
+      gap: 5px;
+    }
+
+    .history-item-del {
+      position: absolute;
+      top: 10px;
+      right: 10px;
+      background: transparent;
+      border: none;
+      color: var(--text-dim);
+      cursor: pointer;
+      padding: 2px 4px;
+      border-radius: 4px;
+      font-size: 16px;
+      opacity: 0;
+      transition: all 0.2s;
+    }
+
+    .history-item:hover .history-item-del { opacity: 1; }
+    .history-item-del:hover { color: var(--red); background: rgba(239,68,68,0.1); }
+
+    /* ============================================================
+       TOAST
+    ============================================================ */
+    .toast-container {
+      position: fixed;
+      bottom: 24px;
+      right: 24px;
+      z-index: 200;
+      display: flex;
+      flex-direction: column;
+      gap: 8px;
+    }
+
+    .toast {
+      background: var(--card);
+      border: 1px solid var(--border);
+      border-radius: var(--radius-sm);
+      padding: 12px 18px;
+      font-size: 13px;
+      font-weight: 500;
+      color: var(--text);
+      box-shadow: 0 8px 32px rgba(0,0,0,0.4);
+      animation: toast-in 0.3s ease;
+      display: flex;
+      align-items: center;
+      gap: 8px;
+      max-width: 300px;
+    }
+
+    .toast.success { border-color: rgba(16,185,129,0.4); color: var(--green); }
+    .toast.error   { border-color: rgba(239,68,68,0.4);  color: var(--red);   }
+
+    @keyframes toast-in {
+      from { opacity: 0; transform: translateX(20px); }
+      to   { opacity: 1; transform: translateX(0);    }
+    }
+
+    /* ============================================================
+       PRINT STYLES
+    ============================================================ */
+    @media print {
+      * { -webkit-print-color-adjust: exact !important; print-color-adjust: exact !important; }
+
+      body {
+        background: #fff !important;
+        color: #1a1a2e !important;
+      }
+
+      body::before, body::after { display: none; }
+
+      header, .api-banner, .search-section, .loading-state,
+      .results-actions, .history-overlay, .history-sidebar,
+      .toast-container, .btn-action, .example-chip,
+      .header-actions { display: none !important; }
+
+      .app { max-width: 100%; padding: 0; }
+
+      #results { display: block !important; }
+
+      .cards-grid {
+        grid-template-columns: 1fr 1fr !important;
+        gap: 12px !important;
+      }
+
+      .col-4, .col-5, .col-6, .col-7, .col-8 { grid-column: span 1 !important; }
+      .col-12 { grid-column: span 2 !important; }
+
+      .card {
+        background: #f8f9fa !important;
+        border: 1px solid #dee2e6 !important;
+        break-inside: avoid;
+      }
+
+      .bd-section {
+        background: #f8f9fa !important;
+        border: 1px solid #dee2e6 !important;
+        break-inside: avoid;
+      }
+
+      .bd-services-grid {
+        background: #dee2e6 !important;
+        grid-template-columns: 1fr 1fr !important;
+      }
+
+      .bd-service-card { background: #fff !important; }
+
+      .project-name-display,
+      .card-title,
+      .bd-service-name,
+      .results-meta h2 { color: #1a1a2e !important; -webkit-text-fill-color: #1a1a2e !important; }
+
+      .data-label, .token-stat-label { color: #666 !important; }
+      .data-value { color: #1a1a2e !important; }
+      .text-m, .bd-service-reason, .top-rec-reasoning { color: #555 !important; }
+
+      .print-header {
+        display: flex !important;
+        align-items: center;
+        justify-content: space-between;
+        padding: 16px 0 12px;
+        border-bottom: 2px solid #dee2e6;
+        margin-bottom: 20px;
+      }
+    }
+
+    /* Hide print-only elements on screen */
+    .print-header { display: none; }
+
+    /* ============================================================
+       LANGUAGE TOGGLE
+    ============================================================ */
+    .lang-toggle {
+      display: flex;
+      align-items: center;
+      background: rgba(255,255,255,0.04);
+      border: 1px solid var(--border);
+      border-radius: var(--radius-sm);
+      overflow: hidden;
+      flex-shrink: 0;
+    }
+
+    .lang-btn {
+      background: transparent;
+      border: none;
+      color: var(--text-dim);
+      padding: 7px 13px;
+      font-family: 'Space Grotesk', sans-serif;
+      font-size: 12px;
+      font-weight: 700;
+      letter-spacing: 0.8px;
+      cursor: pointer;
+      transition: all 0.2s;
+      line-height: 1;
+    }
+
+    .lang-btn.active {
+      background: linear-gradient(135deg, var(--purple), #5B21B6);
+      color: #fff;
+      box-shadow: inset 0 0 12px rgba(124,58,237,0.3);
+    }
+
+    .lang-btn:not(.active):hover {
+      color: var(--text);
+      background: rgba(255,255,255,0.06);
+    }
+
+    .lang-sep {
+      width: 1px;
+      height: 18px;
+      background: var(--border);
+      flex-shrink: 0;
+    }
+
+    /* ============================================================
+       UTILITY
+    ============================================================ */
+    .divider {
+      height: 1px;
+      background: var(--border);
+      margin: 6px 0;
+    }
+
+    .not-available {
+      color: var(--text-dim);
+      font-style: italic;
+      font-size: 12px;
+    }
+
+    .token-not-listed {
+      text-align: center;
+      padding: 30px 0;
+      color: var(--text-dim);
+      font-size: 13px;
+    }
+
+    .token-not-listed svg {
+      width: 36px;
+      height: 36px;
+      margin: 0 auto 12px;
+      display: block;
+      opacity: 0.4;
+    }
+
+  </style>
+</head>
+<body>
+  <div class="app">
+
+    <!-- PRINT HEADER -->
+    <div class="print-header">
+      <div>
+        <strong style="font-size:18px; font-family:'Space Grotesk',sans-serif;">KN Intelligence</strong>
+        <div style="font-size:11px; color:#888; letter-spacing:1px; margin-top:2px;">WEB3 BD RESEARCH REPORT</div>
+      </div>
+      <div style="font-size:12px; color:#888;" id="printDate"></div>
+    </div>
+
+    <!-- HEADER -->
+    <header>
+      <div class="logo">
+        <div class="logo-badge">KN</div>
+        <div class="logo-text">
+          <h1>KN Intelligence</h1>
+          <p data-i18n="logoSubtitle">Web3 BD Research Platform</p>
+        </div>
+      </div>
+      <div class="header-actions">
+        <div class="lang-toggle" role="group" aria-label="Language">
+          <button class="lang-btn active" id="langEN" onclick="setLang('en')">EN</button>
+          <span class="lang-sep"></span>
+          <button class="lang-btn" id="langVI" onclick="setLang('vi')">VI</button>
+        </div>
+        <button class="btn-ghost" onclick="openHistory()">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M3 12a9 9 0 1 0 9-9 9.75 9.75 0 0 0-6.74 2.74L3 8"/><path d="M3 3v5h5"/><path d="M12 7v5l4 2"/></svg>
+          <span data-i18n="navHistory">History</span>
+        </button>
+        <button class="btn-ghost" onclick="window.print()">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="6 9 6 2 18 2 18 9"/><path d="M6 18H4a2 2 0 0 1-2-2v-5a2 2 0 0 1 2-2h16a2 2 0 0 1 2 2v5a2 2 0 0 1-2 2h-2"/><rect x="6" y="14" width="12" height="8"/></svg>
+          <span data-i18n="navExport">Export</span>
+        </button>
+      </div>
+    </header>
+
+    <!-- API KEY BANNER -->
+    <div class="api-banner" id="apiBanner">
+      <div class="api-banner-text">
+        <strong data-i18n="apiRequired">Claude API Key Required</strong>
+        <p data-i18n="apiDesc">Enter your Anthropic API key to enable AI-powered project analysis.</p>
+      </div>
+      <div class="api-key-form">
+        <input type="password" id="apiKeyInput" placeholder="sk-ant-api03-..." autocomplete="off" data-i18n-placeholder="apiKeyPlaceholder">
+        <button class="btn-save-key" onclick="saveApiKey()" data-i18n="apiSaveBtn">Save Key</button>
+      </div>
+      <div class="api-status inactive" id="apiStatus">
+        <span class="dot"></span>
+        <span id="apiStatusText" data-i18n="apiNoKey">No Key</span>
+      </div>
+    </div>
+
+    <!-- SEARCH SECTION -->
+    <section class="search-section">
+      <p class="search-eyebrow" data-i18n="searchEyebrow">BD Intelligence Engine</p>
+      <h2 class="search-title">
+        <span data-i18n="searchTitle1">Analyze Any</span><br>
+        <span class="title-gradient" data-i18n="searchTitle2">Web3 Project</span>
+      </h2>
+      <p class="search-subtitle" data-i18n="searchSubtitle">
+        Enter a Twitter/X handle to get deep BD intelligence — token data, team background, social health, and AI-powered service recommendations.
+      </p>
+      <div class="search-box">
+        <div class="search-input-wrap">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+            <path d="M22 4s-.7 2.1-2 3.4c1.6 10-9.4 17.3-18 11.6 2.2.1 4.4-.6 6-2C3 15.5.5 9.6 3 5c2.2 2.6 5.6 4.1 9 4-.9-4.2 4-6.6 7-3.8 1.1 0 3-1.2 3-1.2z"/>
+          </svg>
+          <input
+            type="text"
+            id="searchInput"
+            placeholder="Enter Twitter/X handle (e.g. @hyperliquid_x)"
+            autocomplete="off"
+            data-i18n-placeholder="searchPlaceholder"
+          >
+        </div>
+        <button class="btn-search" id="searchBtn" onclick="startResearch()" data-i18n="searchBtn">
+          Research Project
+        </button>
+      </div>
+      <div class="search-examples">
+        <span data-i18n="searchTry">Try:</span>
+        <span class="example-chip" onclick="fillExample('@hyperliquid_x')">@hyperliquid_x</span>
+        <span class="example-chip" onclick="fillExample('@eigenlayer')">@eigenlayer</span>
+        <span class="example-chip" onclick="fillExample('@aave')">@aave</span>
+        <span class="example-chip" onclick="fillExample('@berachain')">@berachain</span>
+        <span class="example-chip" onclick="fillExample('@uniswap')">@uniswap</span>
+      </div>
+    </section>
+
+    <!-- LOADING STATE -->
+    <div class="loading-state" id="loadingState">
+      <div class="scan-container">
+        <div class="scan-line"></div>
+        <div class="scan-icon">
+          <div class="scan-icon-inner">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+              <circle cx="11" cy="11" r="8"/><path d="m21 21-4.35-4.35"/>
+              <path d="M11 8v3l2 2"/>
+            </svg>
+          </div>
+        </div>
+        <div class="loading-title" data-i18n="loadingTitle">Analyzing Project...</div>
+        <div class="loading-status" id="loadingStatus" data-i18n="loadingInit">Initializing intelligence scan</div>
+        <div class="loading-steps" id="loadingSteps">
+          <div class="loading-step" id="step1">
+            <span class="step-dot"></span>
+            <span data-i18n="step1">Querying AI knowledge base</span>
+          </div>
+          <div class="loading-step" id="step2">
+            <span class="step-dot"></span>
+            <span data-i18n="step2">Fetching token market data</span>
+          </div>
+          <div class="loading-step" id="step3">
+            <span class="step-dot"></span>
+            <span data-i18n="step3">Scoring social health</span>
+          </div>
+          <div class="loading-step" id="step4">
+            <span class="step-dot"></span>
+            <span data-i18n="step4">Generating BD recommendations</span>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- ERROR STATE -->
+    <div class="error-state" id="errorState">
+      <div class="error-icon">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+          <circle cx="12" cy="12" r="10"/>
+          <line x1="12" y1="8" x2="12" y2="12"/>
+          <line x1="12" y1="16" x2="12.01" y2="16"/>
+        </svg>
+      </div>
+      <div class="error-title" data-i18n="errorTitle">Analysis Failed</div>
+      <div class="error-msg" id="errorMsg" data-i18n="errorDefault">Something went wrong. Please check your API key and try again.</div>
+      <button class="btn-retry" onclick="resetSearch()" data-i18n="errorRetry">Try Again</button>
+    </div>
+
+    <!-- RESULTS -->
+    <div id="results">
+      <div class="results-header">
+        <div class="results-meta">
+          <h2 id="resultsTitle">Project Report</h2>
+          <div class="live-badge">
+            <span class="live-dot"></span>
+            <span data-i18n="liveBadge">Live</span>
+          </div>
+        </div>
+        <div class="results-actions">
+          <button class="btn-action save" onclick="saveReport()">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+              <path d="M19 21H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h11l5 5v11a2 2 0 0 1-2 2z"/>
+              <polyline points="17,21 17,13 7,13 7,21"/>
+              <polyline points="7,3 7,8 15,8"/>
+            </svg>
+            <span data-i18n="saveReport">Save Report</span>
+          </button>
+          <button class="btn-action" onclick="window.print()">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+              <polyline points="6 9 6 2 18 2 18 9"/><path d="M6 18H4a2 2 0 0 1-2-2v-5a2 2 0 0 1 2-2h16a2 2 0 0 1 2 2v5a2 2 0 0 1-2 2h-2"/><rect x="6" y="14" width="12" height="8"/>
+            </svg>
+            <span data-i18n="exportPdf">Export PDF</span>
+          </button>
+          <button class="btn-action" onclick="resetSearch()">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+              <path d="M3 12a9 9 0 0 1 9-9 9.75 9.75 0 0 1 6.74 2.74L21 8"/><path d="M21 3v5h-5"/><path d="M21 12a9 9 0 0 1-9 9 9.75 9.75 0 0 1-6.74-2.74L3 16"/>
+            </svg>
+            <span data-i18n="newSearch">New Search</span>
+          </button>
+        </div>
+      </div>
+
+      <!-- CARDS GRID -->
+      <div class="cards-grid" id="cardsGrid">
+        <!-- Populated by JS -->
+      </div>
+
+      <!-- BD RECOMMENDATIONS -->
+      <div class="bd-section" id="bdSection">
+        <!-- Populated by JS -->
+      </div>
+    </div>
+
+  </div><!-- /.app -->
+
+  <!-- HISTORY SIDEBAR -->
+  <div class="history-overlay" id="historyOverlay" onclick="closeHistory()"></div>
+  <div class="history-sidebar" id="historySidebar">
+    <div class="history-sidebar-header">
+      <h3 data-i18n="historyTitle">Research History</h3>
+      <button class="btn-close-sidebar" onclick="closeHistory()">&#x2715;</button>
+    </div>
+    <div class="history-list" id="historyList">
+      <div class="history-empty" data-i18n-html="historyEmpty">No saved reports yet.<br>Search a project and click "Save Report".</div>
+    </div>
+  </div>
+
+  <!-- TOAST CONTAINER -->
+  <div class="toast-container" id="toastContainer"></div>
+
+  <script>
+    // ============================================================
+    // i18n STRINGS
+    // ============================================================
+    const STRINGS = {
+      en: {
+        logoSubtitle:      'Web3 BD Research Platform',
+        navHistory:        'History',
+        navExport:         'Export',
+        apiRequired:       'Claude API Key Required',
+        apiDesc:           'Enter your Anthropic API key to enable AI-powered project analysis.',
+        apiSaveBtn:        'Save Key',
+        apiKeyPlaceholder: 'sk-ant-api03-...',
+        apiNoKey:          'No Key',
+        apiKeyActive:      'Key Active',
+        searchEyebrow:     'BD Intelligence Engine',
+        searchTitle1:      'Analyze Any',
+        searchTitle2:      'Web3 Project',
+        searchSubtitle:    'Enter a Twitter/X handle to get deep BD intelligence — token data, team background, social health, and AI-powered service recommendations.',
+        searchPlaceholder: 'Enter Twitter/X handle (e.g. @hyperliquid_x)',
+        searchBtn:         'Research Project',
+        searchTry:         'Try:',
+        loadingTitle:      'Analyzing Project...',
+        loadingInit:       'Initializing intelligence scan',
+        step1:             'Querying AI knowledge base',
+        step2:             'Fetching token market data',
+        step3:             'Scoring social health',
+        step4:             'Generating BD recommendations',
+        stepStatus1:       'Querying AI knowledge base...',
+        stepStatus2:       'Fetching CoinGecko market data...',
+        stepStatus3:       'Scoring social engagement...',
+        stepStatus4:       'Building BD recommendations...',
+        loadingAnalyzing:  'Analyzing...',
+        errorTitle:        'Analysis Failed',
+        errorDefault:      'Something went wrong. Please check your API key and try again.',
+        errorRetry:        'Try Again',
+        liveBadge:         'Live',
+        saveReport:        'Save Report',
+        exportPdf:         'Export PDF',
+        newSearch:         'New Search',
+        historyTitle:      'Research History',
+        historyEmpty:      'No saved reports yet.<br>Search a project and click "Save Report".',
+        printSubtitle:     'WEB3 BD RESEARCH REPORT',
+        cardOverview:      'Project Overview',
+        cardToken:         'Token Data',
+        cardSocial:        'Social Health',
+        cardTeam:          'Team & Background',
+        cardMarketing:     'Marketing Activity',
+        labelWebsite:      'Website',
+        labelStage:        'Stage',
+        labelCategory:     'Category',
+        labelChains:       'Chain(s)',
+        labelListed:       'Listed',
+        labelToken:        'Token',
+        notFound:          'Not found',
+        notPublic:         'Not public',
+        notDisclosed:      'Not disclosed',
+        noneDetected:      'None detected',
+        unknown:           'Unknown',
+        socialScoreLabel:  'Social Score / 10',
+        labelFollowers:    'Followers',
+        labelEngagement:   'Engagement',
+        labelActivity:     'Activity',
+        labelOtherChannels:'Other Channels',
+        labelPrice:        'Price',
+        labelMarketCap:    'Market Cap',
+        label24hVolume:    '24h Volume',
+        labelTvl:          'TVL',
+        labelCircSupply:   'Circulating Supply',
+        labelSource:       'Source',
+        tokenNotFound:     'Token not found on CoinGecko',
+        tokenSearchedFor:  'Searched for:',
+        tokenNoSymbol:     'No token symbol available',
+        labelTeamRegion:   'Team Region',
+        labelKeyMembers:   'Key Members',
+        labelFunding:      'Funding Rounds',
+        labelBackers:      'Backers / VCs',
+        marketingScoreLabel:'Marketing Score / 10',
+        labelCampaigns:    'Active Campaigns',
+        labelFrequency:    'Frequency',
+        bdTitle:           'BD Service Recommendations',
+        bdSubtitle:        'AI-generated recommendations based on project analysis and growth stage',
+        topRecLabel:       'Top Recommendation',
+        serviceLabel:      'SERVICE',
+        noRecs:            'No recommendations available.',
+        toastNoHandle:     'Please enter a Twitter/X handle',
+        toastNeedKey:      'Please enter your Claude API key first',
+        toastInvalidKey:   'Please enter a valid API key',
+        toastKeySaved:     'API key saved successfully',
+        toastNoReport:     'No report to save',
+        toastReportSaved:  'Report saved to history',
+        generatedLabel:    'Generated:',
+      },
+      vi: {
+        logoSubtitle:      'Nền Tảng Nghiên Cứu BD Web3',
+        navHistory:        'Lịch Sử',
+        navExport:         'Xuất File',
+        apiRequired:       'Yêu Cầu Claude API Key',
+        apiDesc:           'Nhập API key Anthropic của bạn để kích hoạt phân tích dự án bằng AI.',
+        apiSaveBtn:        'Lưu Key',
+        apiKeyPlaceholder: 'sk-ant-api03-...',
+        apiNoKey:          'Chưa Có Key',
+        apiKeyActive:      'Key Đang Hoạt Động',
+        searchEyebrow:     'Công Cụ BD Intelligence',
+        searchTitle1:      'Phân Tích Bất Kỳ',
+        searchTitle2:      'Dự Án Web3',
+        searchSubtitle:    'Nhập Twitter/X handle để nhận thông tin BD chuyên sâu — dữ liệu token, đội ngũ, sức khỏe mạng xã hội và khuyến nghị dịch vụ từ AI.',
+        searchPlaceholder: 'Nhập Twitter/X handle (ví dụ: @hyperliquid_x)',
+        searchBtn:         'Nghiên Cứu Dự Án',
+        searchTry:         'Thử:',
+        loadingTitle:      'Đang Phân Tích Dự Án...',
+        loadingInit:       'Đang khởi tạo quá trình quét...',
+        step1:             'Truy vấn cơ sở dữ liệu AI',
+        step2:             'Lấy dữ liệu thị trường token',
+        step3:             'Đánh giá sức khỏe mạng xã hội',
+        step4:             'Tạo khuyến nghị BD',
+        stepStatus1:       'Đang truy vấn cơ sở dữ liệu AI...',
+        stepStatus2:       'Đang lấy dữ liệu từ CoinGecko...',
+        stepStatus3:       'Đang đánh giá mức độ tương tác...',
+        stepStatus4:       'Đang xây dựng khuyến nghị BD...',
+        loadingAnalyzing:  'Đang Phân Tích...',
+        errorTitle:        'Phân Tích Thất Bại',
+        errorDefault:      'Đã xảy ra lỗi. Vui lòng kiểm tra API key và thử lại.',
+        errorRetry:        'Thử Lại',
+        liveBadge:         'Trực Tiếp',
+        saveReport:        'Lưu Báo Cáo',
+        exportPdf:         'Xuất PDF',
+        newSearch:         'Tìm Kiếm Mới',
+        historyTitle:      'Lịch Sử Nghiên Cứu',
+        historyEmpty:      'Chưa có báo cáo nào được lưu.<br>Tìm kiếm dự án và nhấn "Lưu Báo Cáo".',
+        printSubtitle:     'BÁO CÁO NGHIÊN CỨU WEB3 BD',
+        cardOverview:      'Tổng Quan Dự Án',
+        cardToken:         'Dữ Liệu Token',
+        cardSocial:        'Sức Khỏe Mạng Xã Hội',
+        cardTeam:          'Đội Ngũ & Nền Tảng',
+        cardMarketing:     'Hoạt Động Marketing',
+        labelWebsite:      'Website',
+        labelStage:        'Giai Đoạn',
+        labelCategory:     'Danh Mục',
+        labelChains:       'Blockchain',
+        labelListed:       'Niêm Yết',
+        labelToken:        'Token',
+        notFound:          'Không tìm thấy',
+        notPublic:         'Không công khai',
+        notDisclosed:      'Chưa công bố',
+        noneDetected:      'Không phát hiện',
+        unknown:           'Không rõ',
+        socialScoreLabel:  'Điểm Mạng Xã Hội / 10',
+        labelFollowers:    'Người Theo Dõi',
+        labelEngagement:   'Mức Độ Tương Tác',
+        labelActivity:     'Mức Độ Hoạt Động',
+        labelOtherChannels:'Kênh Khác',
+        labelPrice:        'Giá',
+        labelMarketCap:    'Vốn Hóa',
+        label24hVolume:    'Khối Lượng 24h',
+        labelTvl:          'TVL',
+        labelCircSupply:   'Lượng Cung Lưu Hành',
+        labelSource:       'Nguồn',
+        tokenNotFound:     'Không tìm thấy token trên CoinGecko',
+        tokenSearchedFor:  'Đã tìm kiếm:',
+        tokenNoSymbol:     'Không có ký hiệu token',
+        labelTeamRegion:   'Khu Vực Đội Ngũ',
+        labelKeyMembers:   'Thành Viên Chủ Chốt',
+        labelFunding:      'Vòng Gọi Vốn',
+        labelBackers:      'Nhà Đầu Tư / VCs',
+        marketingScoreLabel:'Điểm Marketing / 10',
+        labelCampaigns:    'Chiến Dịch Đang Chạy',
+        labelFrequency:    'Tần Suất',
+        bdTitle:           'Khuyến Nghị Dịch Vụ BD',
+        bdSubtitle:        'Khuyến nghị từ AI dựa trên phân tích dự án và giai đoạn tăng trưởng',
+        topRecLabel:       'Khuyến Nghị Hàng Đầu',
+        serviceLabel:      'DỊCH VỤ',
+        noRecs:            'Không có khuyến nghị.',
+        toastNoHandle:     'Vui lòng nhập Twitter/X handle',
+        toastNeedKey:      'Vui lòng nhập Claude API key trước',
+        toastInvalidKey:   'Vui lòng nhập API key hợp lệ',
+        toastKeySaved:     'Đã lưu API key thành công',
+        toastNoReport:     'Không có báo cáo để lưu',
+        toastReportSaved:  'Đã lưu báo cáo vào lịch sử',
+        generatedLabel:    'Tạo lúc:',
+      }
+    };
+
+    // ============================================================
+    // LANGUAGE STATE
+    // ============================================================
+    let currentLang = localStorage.getItem('kn_lang') || 'en';
+
+    function t(key) {
+      return STRINGS[currentLang]?.[key] ?? STRINGS.en[key] ?? key;
+    }
+
+    function setLang(lang) {
+      if (lang === currentLang) return;
+      currentLang = lang;
+      localStorage.setItem('kn_lang', lang);
+      applyLang();
+    }
+
+    function applyLang() {
+      // Update <html lang>
+      document.documentElement.lang = currentLang;
+
+      // Update toggle button active states
+      document.getElementById('langEN').classList.toggle('active', currentLang === 'en');
+      document.getElementById('langVI').classList.toggle('active', currentLang === 'vi');
+
+      // Update all [data-i18n] elements (textContent)
+      document.querySelectorAll('[data-i18n]').forEach(el => {
+        const key = el.getAttribute('data-i18n');
+        el.textContent = t(key);
+      });
+
+      // Update all [data-i18n-html] elements (innerHTML — for tags like <br>)
+      document.querySelectorAll('[data-i18n-html]').forEach(el => {
+        const key = el.getAttribute('data-i18n-html');
+        el.innerHTML = t(key);
+      });
+
+      // Update all [data-i18n-placeholder] elements
+      document.querySelectorAll('[data-i18n-placeholder]').forEach(el => {
+        const key = el.getAttribute('data-i18n-placeholder');
+        el.placeholder = t(key);
+      });
+
+      // Re-sync search button if not in loading state
+      const sb = document.getElementById('searchBtn');
+      if (sb && !sb.disabled) sb.textContent = t('searchBtn');
+
+      // Re-render results and history if open
+      if (currentData) renderResults(currentData);
+      renderHistoryList();
+
+      // Update print subtitle
+      const ps = document.querySelector('.print-header div div:last-child');
+      if (ps) ps.textContent = t('printSubtitle');
+    }
+
+    // ============================================================
+    // STATE
+    // ============================================================
+    let currentData = null;
+    let currentHandle = '';
+
+    // ============================================================
+    // API KEY MANAGEMENT
+    // ============================================================
+    function loadApiKey() {
+      const key = localStorage.getItem('kn_claude_api_key') || '';
+      const input = document.getElementById('apiKeyInput');
+      if (key) {
+        input.value = key;
+        setApiStatus(true);
+      }
+    }
+
+    function saveApiKey() {
+      const key = document.getElementById('apiKeyInput').value.trim();
+      if (!key) { showToast(t('toastInvalidKey'), 'error'); return; }
+      localStorage.setItem('kn_claude_api_key', key);
+      setApiStatus(true);
+      showToast(t('toastKeySaved'), 'success');
+    }
+
+    function getApiKey() {
+      return localStorage.getItem('kn_claude_api_key') || '';
+    }
+
+    function setApiStatus(active) {
+      const el = document.getElementById('apiStatus');
+      const txt = document.getElementById('apiStatusText');
+      el.className = 'api-status ' + (active ? 'active' : 'inactive');
+      txt.textContent = active ? t('apiKeyActive') : t('apiNoKey');
+    }
+
+    // ============================================================
+    // SEARCH
+    // ============================================================
+    function fillExample(handle) {
+      document.getElementById('searchInput').value = handle;
+      document.getElementById('searchInput').focus();
+    }
+
+    document.getElementById('searchInput').addEventListener('keydown', function(e) {
+      if (e.key === 'Enter') startResearch();
+    });
+
+    async function startResearch() {
+      const input = document.getElementById('searchInput');
+      let handle = input.value.trim();
+      if (!handle) { showToast(t('toastNoHandle'), 'error'); return; }
+
+      const apiKey = getApiKey();
+      if (!apiKey) {
+        showToast(t('toastNeedKey'), 'error');
+        document.getElementById('apiKeyInput').focus();
+        return;
+      }
+
+      if (!handle.startsWith('@')) handle = '@' + handle;
+      currentHandle = handle;
+
+      setLoading(true);
+      hideAll();
+
+      try {
+        // Step 1 — Claude analysis
+        animateStep(1, 'active');
+        const projectData = await analyzeWithClaude(handle, apiKey);
+        animateStep(1, 'done');
+
+        // Step 2 — CoinGecko
+        animateStep(2, 'active');
+        const tokenData = await fetchCoinGeckoData(projectData.tokenSymbol || projectData.projectName);
+        animateStep(2, 'done');
+
+        // Step 3 — Social scoring (derived from AI data)
+        animateStep(3, 'active');
+        await delay(400);
+        animateStep(3, 'done');
+
+        // Step 4 — BD recommendations
+        animateStep(4, 'active');
+        await delay(500);
+        animateStep(4, 'done');
+
+        currentData = { ...projectData, tokenMarketData: tokenData, handle };
+        setLoading(false);
+        renderResults(currentData);
+
+      } catch (err) {
+        setLoading(false);
+        showError(err.message || t('errorDefault'));
+      }
+    }
+
+    // ============================================================
+    // CLAUDE API
+    // ============================================================
+    async function analyzeWithClaude(handle, apiKey) {
+      const systemPrompt = `You are a Web3 BD intelligence analyst. When given a Twitter/X handle, analyze the project and return a JSON object with these exact fields: projectName, website, stage, category, chains, isListed, exchanges, tokenSymbol, socialFollowers, engagementRate, activityLevel, otherSocials, socialScore, teamRegion, keyTeamMembers, fundingRounds, backers, activeCampaigns, campaignFrequency, marketingScore, bdRecommendations (array of objects with serviceName, priority, reasoning, estimatedImpact), topRecommendation, topReasoning. Base analysis on your knowledge of the project. If a field is unknown, use null or "Unknown". Return ONLY valid JSON, no markdown, no explanation.`;
+
+      const userMsg = `Analyze this Web3 project Twitter handle: ${handle}
+
+Return a comprehensive JSON analysis. For bdRecommendations, provide 4-6 services from these options: "KOL Marketing Growth", "Listing Boost", "TVL Growth Campaign", "Social Media Management", "Airdrop Campaign", "Raise Fund Support", "Community Building", "PR & Media Coverage". Each with priority (HIGH/MEDIUM/LOW), reasoning (1-2 sentences), and estimatedImpact (what they can realistically expect).`;
+
+      const resp = await fetch('https://api.anthropic.com/v1/messages', {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+          'x-api-key': apiKey,
+          'anthropic-version': '2023-06-01',
+          'anthropic-dangerous-direct-browser-access': 'true'
+        },
+        body: JSON.stringify({
+          model: 'claude-sonnet-4-20250514',
+          max_tokens: 4096,
+          system: systemPrompt,
+          messages: [{ role: 'user', content: userMsg }]
+        })
+      });
+
+      if (!resp.ok) {
+        const errData = await resp.json().catch(() => ({}));
+        const msg = errData.error?.message || `API error ${resp.status}`;
+        throw new Error(msg);
+      }
+
+      const data = await resp.json();
+      const raw = data.content?.[0]?.text || '';
+
+      // Parse JSON (strip markdown code fences if present)
+      let jsonStr = raw.trim();
+      const fenceMatch = jsonStr.match(/```(?:json)?\s*([\s\S]*?)\s*```/);
+      if (fenceMatch) jsonStr = fenceMatch[1];
+
+      // Find JSON object in the response
+      const objMatch = jsonStr.match(/\{[\s\S]*\}/);
+      if (objMatch) jsonStr = objMatch[0];
+
+      return JSON.parse(jsonStr);
+    }
+
+    // ============================================================
+    // COINGECKO API
+    // ============================================================
+    async function fetchCoinGeckoData(query) {
+      if (!query || query === 'null' || query === 'Unknown') return null;
+
+      try {
+        // Search for the coin
+        const searchResp = await fetch(
+          `https://api.coingecko.com/api/v3/search?query=${encodeURIComponent(query)}`
+        );
+        if (!searchResp.ok) return null;
+        const searchData = await searchResp.json();
+        const coins = searchData.coins || [];
+        if (!coins.length) return null;
+
+        const coinId = coins[0].id;
+
+        // Get market data
+        const coinResp = await fetch(
+          `https://api.coingecko.com/api/v3/coins/${coinId}?localization=false&tickers=false&market_data=true&community_data=false&developer_data=false`
+        );
+        if (!coinResp.ok) return null;
+        const coinData = await coinResp.json();
+
+        const md = coinData.market_data;
+        return {
+          name: coinData.name,
+          symbol: coinData.symbol?.toUpperCase(),
+          price: md?.current_price?.usd,
+          marketCap: md?.market_cap?.usd,
+          volume24h: md?.total_volume?.usd,
+          priceChange24h: md?.price_change_percentage_24h,
+          tvl: md?.total_value_locked?.usd || null,
+          circulatingSupply: md?.circulating_supply,
+          image: coinData.image?.small,
+          coingeckoUrl: `https://www.coingecko.com/en/coins/${coinId}`
+        };
+      } catch {
+        return null;
+      }
+    }
+
+    // ============================================================
+    // RENDER RESULTS
+    // ============================================================
+    function renderResults(d) {
+      document.getElementById('resultsTitle').textContent = d.projectName || 'Project Report';
+      document.getElementById('printDate').textContent = t('generatedLabel') + ' ' + new Date().toLocaleString();
+
+      const grid = document.getElementById('cardsGrid');
+      grid.innerHTML = `
+        ${renderOverviewCard(d)}
+        ${renderTokenCard(d)}
+        ${renderSocialCard(d)}
+        ${renderTeamCard(d)}
+        ${renderMarketingCard(d)}
+      `;
+
+      document.getElementById('bdSection').innerHTML = renderBdSection(d);
+
+      document.getElementById('results').classList.add('active');
+      document.getElementById('results').scrollIntoView({ behavior: 'smooth', block: 'start' });
+
+      // Animate score bars
+      setTimeout(() => {
+        document.querySelectorAll('.score-bar-fill').forEach(el => {
+          el.style.width = el.dataset.width + '%';
+        });
+      }, 100);
+    }
+
+    // --- CARD 1: PROJECT OVERVIEW ---
+    function renderOverviewCard(d) {
+      const stageMap = {
+        'Mainnet': 'badge-green',
+        'Testnet': 'badge-yellow',
+        'Pre-launch': 'badge-red',
+        'Unknown': 'badge-gray'
+      };
+      const stageBadge = stageMap[d.stage] || 'badge-gray';
+      const chains = (d.chains || []).join(', ') || 'Unknown';
+      const exchanges = d.isListed && d.exchanges?.length
+        ? d.exchanges.join(', ')
+        : d.isListed ? 'Yes' : 'No';
+
+      return `
+        <div class="card col-6">
+          <div class="card-header">
+            <div class="card-icon icon-purple">
+              <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                <circle cx="12" cy="12" r="10"/><line x1="2" y1="12" x2="22" y2="12"/>
+                <path d="M12 2a15.3 15.3 0 0 1 4 10 15.3 15.3 0 0 1-4 10 15.3 15.3 0 0 1-4-10 15.3 15.3 0 0 1 4-10z"/>
+              </svg>
+            </div>
+            <span class="card-title">${t('cardOverview')}</span>
+          </div>
+          <div class="project-name-display">${esc(d.projectName || t('unknown'))}</div>
+          <div class="project-handle">${esc(currentHandle)}</div>
+          <div class="data-row">
+            <span class="data-label">${t('labelWebsite')}</span>
+            <span class="data-value">
+              ${d.website && d.website !== 'Unknown' && d.website !== 'null'
+                ? `<a href="${esc(d.website)}" target="_blank" rel="noopener">${esc(d.website.replace(/^https?:\/\//, ''))}</a>`
+                : `<span class="not-available">${t('notFound')}</span>`}
+            </span>
+          </div>
+          <div class="data-row">
+            <span class="data-label">${t('labelStage')}</span>
+            <span class="data-value"><span class="badge ${stageBadge}">${esc(d.stage || t('unknown'))}</span></span>
+          </div>
+          <div class="data-row">
+            <span class="data-label">${t('labelCategory')}</span>
+            <span class="data-value"><span class="badge badge-purple">${esc(d.category || t('unknown'))}</span></span>
+          </div>
+          <div class="data-row">
+            <span class="data-label">${t('labelChains')}</span>
+            <span class="data-value">${esc(chains)}</span>
+          </div>
+          <div class="data-row">
+            <span class="data-label">${t('labelListed')}</span>
+            <span class="data-value">
+              ${d.isListed
+                ? `<span class="badge badge-green">Yes</span> <span style="color:var(--text-m);font-size:12px;margin-left:6px;">${esc(exchanges)}</span>`
+                : `<span class="badge badge-gray">${t('notFound')}</span>`}
+            </span>
+          </div>
+          ${d.tokenSymbol && d.tokenSymbol !== 'null' && d.tokenSymbol !== 'Unknown' ? `
+          <div class="data-row">
+            <span class="data-label">${t('labelToken')}</span>
+            <span class="data-value"><span class="badge badge-cyan">$${esc(d.tokenSymbol)}</span></span>
+          </div>` : ''}
+        </div>`;
+    }
+
+    // --- CARD 2: TOKEN DATA ---
+    function renderTokenCard(d) {
+      const td = d.tokenMarketData;
+
+      if (!td) {
+        return `
+          <div class="card col-6">
+            <div class="card-header">
+              <div class="card-icon icon-cyan">
+                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                  <circle cx="12" cy="12" r="10"/>
+                  <path d="M12 6v6l4 2"/>
+                </svg>
+              </div>
+              <span class="card-title">${t('cardToken')}</span>
+            </div>
+            <div class="token-not-listed">
+              <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5">
+                <rect x="2" y="3" width="20" height="14" rx="2" ry="2"/>
+                <line x1="8" y1="21" x2="16" y2="21"/>
+                <line x1="12" y1="17" x2="12" y2="21"/>
+              </svg>
+              ${t('tokenNotFound')}<br>
+              <span style="font-size:11px;opacity:0.6;margin-top:4px;display:block;">
+                ${d.tokenSymbol && d.tokenSymbol !== 'null' ? `${t('tokenSearchedFor')} $${esc(d.tokenSymbol)}` : t('tokenNoSymbol')}
+              </span>
+            </div>
+          </div>`;
+      }
+
+      const priceChange = td.priceChange24h;
+      const changeColor = priceChange > 0 ? 'green' : priceChange < 0 ? '#EF4444' : 'var(--text-m)';
+      const changeSign  = priceChange > 0 ? '+' : '';
+
+      return `
+        <div class="card col-6">
+          <div class="card-header">
+            <div class="card-icon icon-cyan">
+              ${td.image ? `<img src="${td.image}" style="width:20px;height:20px;border-radius:50%;" alt="${esc(td.symbol)}">` : `
+              <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                <circle cx="12" cy="12" r="10"/>
+                <path d="M12 8v8M8 12h8"/>
+              </svg>`}
+            </div>
+            <span class="card-title">${t('cardToken')} — ${esc(td.name)} <span style="color:var(--cyan);font-weight:400">$${esc(td.symbol)}</span></span>
+          </div>
+          <div class="token-stats">
+            <div class="token-stat">
+              <div class="token-stat-label">${t('labelPrice')}</div>
+              <div class="token-stat-value cyan">
+                ${td.price != null ? '$' + fmtPrice(td.price) : '—'}
+                ${priceChange != null ? `<span style="font-size:12px;color:${changeColor};margin-left:4px;">${changeSign}${priceChange.toFixed(2)}%</span>` : ''}
+              </div>
+            </div>
+            <div class="token-stat">
+              <div class="token-stat-label">${t('labelMarketCap')}</div>
+              <div class="token-stat-value">${td.marketCap != null ? fmtLargeNum(td.marketCap) : '—'}</div>
+            </div>
+            <div class="token-stat">
+              <div class="token-stat-label">${t('label24hVolume')}</div>
+              <div class="token-stat-value green">${td.volume24h != null ? fmtLargeNum(td.volume24h) : '—'}</div>
+            </div>
+            <div class="token-stat">
+              <div class="token-stat-label">${t('labelTvl')}</div>
+              <div class="token-stat-value">${td.tvl != null ? fmtLargeNum(td.tvl) : 'N/A'}</div>
+            </div>
+          </div>
+          ${td.circulatingSupply ? `
+          <div class="data-row" style="margin-top:14px;">
+            <span class="data-label">${t('labelCircSupply')}</span>
+            <span class="data-value">${fmtLargeNum(td.circulatingSupply, true)} ${esc(td.symbol)}</span>
+          </div>` : ''}
+          <div class="data-row">
+            <span class="data-label">${t('labelSource')}</span>
+            <span class="data-value"><a href="${esc(td.coingeckoUrl)}" target="_blank" rel="noopener">CoinGecko ↗</a></span>
+          </div>
+        </div>`;
+    }
+
+    // --- CARD 3: SOCIAL HEALTH ---
+    function renderSocialCard(d) {
+      const score = parseFloat(d.socialScore) || 0;
+      const scoreClass = score >= 7 ? 'score-high' : score >= 4 ? 'score-mid' : 'score-low';
+      const fillClass  = score >= 7 ? 'fill-high'  : score >= 4 ? 'fill-mid'  : 'fill-low';
+
+      const activityMap = {
+        'Active':    'badge-green',
+        'Inactive':  'badge-red',
+        'Bot-heavy': 'badge-yellow',
+        'Unknown':   'badge-gray'
+      };
+      const actBadge = activityMap[d.activityLevel] || 'badge-gray';
+
+      const socials = d.otherSocials || [];
+      const socialHtml = Array.isArray(socials) && socials.length
+        ? socials.map(s => `<span class="social-link">${esc(s)}</span>`).join('')
+        : `<span class="not-available">${t('noneDetected')}</span>`;
+
+      return `
+        <div class="card col-4">
+          <div class="card-header">
+            <div class="card-icon icon-green">
+              <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                <path d="M17 21v-2a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v2"/>
+                <circle cx="9" cy="7" r="4"/>
+                <path d="M23 21v-2a4 4 0 0 0-3-3.87M16 3.13a4 4 0 0 1 0 7.75"/>
+              </svg>
+            </div>
+            <span class="card-title">${t('cardSocial')}</span>
+          </div>
+          <div class="score-display" style="margin-bottom:18px;">
+            <div class="score-number ${scoreClass}">${score.toFixed(1)}</div>
+            <div class="score-bar-wrap">
+              <div class="score-label-sm">${t('socialScoreLabel')}</div>
+              <div class="score-bar">
+                <div class="score-bar-fill ${fillClass}" style="width:0%" data-width="${score * 10}"></div>
+              </div>
+            </div>
+          </div>
+          <div class="data-row">
+            <span class="data-label">${t('labelFollowers')}</span>
+            <span class="data-value">${d.socialFollowers ? fmtLargeNum(d.socialFollowers, true) : `<span class="not-available">${t('unknown')}</span>`}</span>
+          </div>
+          <div class="data-row">
+            <span class="data-label">${t('labelEngagement')}</span>
+            <span class="data-value">${d.engagementRate ? esc(d.engagementRate) : `<span class="not-available">${t('unknown')}</span>`}</span>
+          </div>
+          <div class="data-row">
+            <span class="data-label">${t('labelActivity')}</span>
+            <span class="data-value"><span class="badge ${actBadge}">${esc(d.activityLevel || t('unknown'))}</span></span>
+          </div>
+          <div class="divider"></div>
+          <div style="margin-top:12px;">
+            <div class="data-label" style="margin-bottom:8px;">${t('labelOtherChannels')}</div>
+            <div class="social-links">${socialHtml}</div>
+          </div>
+        </div>`;
+    }
+
+    // --- CARD 4: TEAM & BACKGROUND ---
+    function renderTeamCard(d) {
+      const members = d.keyTeamMembers || [];
+      const backers = d.backers || [];
+      const funding = d.fundingRounds || [];
+
+      const membersHtml = Array.isArray(members) && members.length
+        ? `<div class="tags-wrap" style="justify-content:flex-end;">${members.map(m => `<span class="badge badge-purple">${esc(m)}</span>`).join('')}</div>`
+        : `<span class="not-available">${t('notPublic')}</span>`;
+
+      const backersHtml = Array.isArray(backers) && backers.length
+        ? `<div class="tags-wrap" style="justify-content:flex-end;">${backers.map(b => `<span class="badge badge-cyan">${esc(b)}</span>`).join('')}</div>`
+        : `<span class="not-available">${t('notDisclosed')}</span>`;
+
+      const fundingHtml = Array.isArray(funding) && funding.length
+        ? funding.map(f => `<span class="badge badge-yellow">${esc(typeof f === 'object' ? JSON.stringify(f) : f)}</span>`).join(' ')
+        : (typeof funding === 'string' && funding ? `<span class="data-value">${esc(funding)}</span>` : `<span class="not-available">${t('notDisclosed')}</span>`);
+
+      return `
+        <div class="card col-4">
+          <div class="card-header">
+            <div class="card-icon icon-yellow">
+              <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                <path d="M20 7H4a2 2 0 0 0-2 2v6a2 2 0 0 0 2 2h16a2 2 0 0 0 2-2V9a2 2 0 0 0-2-2z"/>
+                <path d="M16 21V5a2 2 0 0 0-2-2h-4a2 2 0 0 0-2 2v16"/>
+              </svg>
+            </div>
+            <span class="card-title">${t('cardTeam')}</span>
+          </div>
+          <div class="data-row">
+            <span class="data-label">${t('labelTeamRegion')}</span>
+            <span class="data-value">${d.teamRegion && d.teamRegion !== 'Unknown' && d.teamRegion !== 'null' ? esc(d.teamRegion) : `<span class="not-available">${t('unknown')}</span>`}</span>
+          </div>
+          <div class="data-row">
+            <span class="data-label">${t('labelKeyMembers')}</span>
+            <span class="data-value">${membersHtml}</span>
+          </div>
+          <div class="data-row">
+            <span class="data-label">${t('labelFunding')}</span>
+            <span class="data-value">${fundingHtml}</span>
+          </div>
+          <div class="data-row">
+            <span class="data-label">${t('labelBackers')}</span>
+            <span class="data-value">${backersHtml}</span>
+          </div>
+        </div>`;
+    }
+
+    // --- CARD 5: MARKETING ACTIVITY ---
+    function renderMarketingCard(d) {
+      const campaigns = d.activeCampaigns || [];
+      const score = parseFloat(d.marketingScore) || 0;
+      const scoreClass = score >= 7 ? 'score-high' : score >= 4 ? 'score-mid' : 'score-low';
+      const fillClass  = score >= 7 ? 'fill-high'  : score >= 4 ? 'fill-mid'  : 'fill-low';
+
+      const campaignHtml = Array.isArray(campaigns) && campaigns.length
+        ? campaigns.map(c => `<span class="campaign-tag">${esc(c)}</span>`).join('')
+        : `<span class="not-available">${t('noneDetected')}</span>`;
+
+      return `
+        <div class="card col-4">
+          <div class="card-header">
+            <div class="card-icon icon-red">
+              <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                <polygon points="11 5 6 9 2 9 2 15 6 15 11 19 11 5"/>
+                <path d="M19.07 4.93a10 10 0 0 1 0 14.14M15.54 8.46a5 5 0 0 1 0 7.07"/>
+              </svg>
+            </div>
+            <span class="card-title">${t('cardMarketing')}</span>
+          </div>
+          <div class="score-display" style="margin-bottom:18px;">
+            <div class="score-number ${scoreClass}">${score.toFixed(1)}</div>
+            <div class="score-bar-wrap">
+              <div class="score-label-sm">${t('marketingScoreLabel')}</div>
+              <div class="score-bar">
+                <div class="score-bar-fill ${fillClass}" style="width:0%" data-width="${score * 10}"></div>
+              </div>
+            </div>
+          </div>
+          <div style="margin-bottom:14px;">
+            <div class="data-label" style="margin-bottom:8px;">${t('labelCampaigns')}</div>
+            <div style="display:flex;flex-wrap:wrap;gap:6px;">${campaignHtml}</div>
+          </div>
+          <div class="data-row">
+            <span class="data-label">${t('labelFrequency')}</span>
+            <span class="data-value">${d.campaignFrequency && d.campaignFrequency !== 'null' ? esc(d.campaignFrequency) : `<span class="not-available">${t('unknown')}</span>`}</span>
+          </div>
+        </div>`;
+    }
+
+    // --- BD RECOMMENDATIONS SECTION ---
+    function renderBdSection(d) {
+      const recs = d.bdRecommendations || [];
+      const top = d.topRecommendation || (recs[0]?.serviceName) || 'Unknown';
+      const topReasoning = d.topReasoning || d.topReasonning || (recs[0]?.reasoning) || '';
+
+      const servicesHtml = recs.map((r, i) => {
+        const priority = (r.priority || 'MEDIUM').toUpperCase();
+        return `
+          <div class="bd-service-card">
+            <div class="bd-service-top">
+              <span class="bd-service-num">#${i + 1} ${t('serviceLabel')}</span>
+              <span class="priority-badge priority-${priority}">${priority}</span>
+            </div>
+            <div class="bd-service-name">${esc(r.serviceName || 'Service')}</div>
+            <div class="bd-service-reason">${esc(r.reasoning || '')}</div>
+            <div class="bd-service-impact">
+              <span class="impact-icon">&#8599;</span>
+              <span class="impact-text">${esc(r.estimatedImpact || '')}</span>
+            </div>
+          </div>`;
+      }).join('');
+
+      return `
+        <div class="bd-section-header">
+          <div class="bd-header-icon">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+              <path d="M22 11.08V12a10 10 0 1 1-5.93-9.14"/>
+              <polyline points="22 4 12 14.01 9 11.01"/>
+            </svg>
+          </div>
+          <div class="bd-header-text">
+            <h3>${t('bdTitle')}</h3>
+            <p>${t('bdSubtitle')}</p>
+          </div>
+        </div>
+        <div class="top-recommendation">
+          <div class="top-rec-label">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" style="width:13px;height:13px;"><polygon points="12 2 15.09 8.26 22 9.27 17 14.14 18.18 21.02 12 17.77 5.82 21.02 7 14.14 2 9.27 8.91 8.26 12 2"/></svg>
+            ${t('topRecLabel')}
+          </div>
+          <div class="top-rec-service">${esc(top)}</div>
+          <div class="top-rec-reasoning">${esc(topReasoning)}</div>
+        </div>
+        <div class="bd-services-grid">
+          ${servicesHtml || `<div style="padding:30px;color:var(--text-dim);font-size:13px;">${t('noRecs')}</div>`}
+        </div>`;
+    }
+
+    // ============================================================
+    // LOADING / UI STATE
+    // ============================================================
+    function setLoading(on) {
+      const ls = document.getElementById('loadingState');
+      const sb = document.getElementById('searchBtn');
+      if (on) {
+        ls.classList.add('active');
+        sb.disabled = true;
+        sb.textContent = t('loadingAnalyzing');
+        // Reset steps
+        ['step1','step2','step3','step4'].forEach(id => {
+          const el = document.getElementById(id);
+          el.className = 'loading-step';
+        });
+        document.getElementById('loadingStatus').textContent = t('loadingInit');
+      } else {
+        ls.classList.remove('active');
+        sb.disabled = false;
+        sb.textContent = t('searchBtn');
+      }
+    }
+
+    function animateStep(num, state) {
+      const el = document.getElementById('step' + num);
+      if (!el) return;
+      el.className = 'loading-step ' + state;
+      const statusKey = 'stepStatus' + num;
+      document.getElementById('loadingStatus').textContent = t(statusKey);
+    }
+
+    function hideAll() {
+      document.getElementById('results').classList.remove('active');
+      document.getElementById('errorState').classList.remove('active');
+    }
+
+    function showError(msg) {
+      document.getElementById('errorMsg').textContent = msg;
+      document.getElementById('errorState').classList.add('active');
+    }
+
+    function resetSearch() {
+      hideAll();
+      document.getElementById('loadingState').classList.remove('active');
+      document.getElementById('searchInput').value = '';
+      document.getElementById('searchInput').focus();
+      currentData = null;
+    }
+
+    // ============================================================
+    // HISTORY
+    // ============================================================
+    function saveReport() {
+      if (!currentData) { showToast(t('toastNoReport'), 'error'); return; }
+      const history = getHistory();
+      const entry = {
+        id: Date.now(),
+        handle: currentHandle,
+        projectName: currentData.projectName || currentHandle,
+        topRecommendation: currentData.topRecommendation || (currentData.bdRecommendations?.[0]?.serviceName) || '—',
+        date: new Date().toLocaleDateString(),
+        data: currentData
+      };
+      // Avoid duplicates by handle
+      const filtered = history.filter(h => h.handle !== currentHandle);
+      filtered.unshift(entry);
+      localStorage.setItem('kn_history', JSON.stringify(filtered.slice(0, 10)));
+      renderHistoryList();
+      showToast(t('toastReportSaved'), 'success');
+    }
+
+    function getHistory() {
+      try { return JSON.parse(localStorage.getItem('kn_history') || '[]'); }
+      catch { return []; }
+    }
+
+    function renderHistoryList() {
+      const list = document.getElementById('historyList');
+      const history = getHistory();
+      if (!history.length) {
+        list.innerHTML = `<div class="history-empty">${t('historyEmpty')}</div>`;
+        return;
+      }
+      list.innerHTML = history.map(h => `
+        <div class="history-item" onclick="loadHistoryItem(${h.id})">
+          <div class="history-item-top">
+            <div class="history-project-name">${esc(h.projectName)}</div>
+            <div class="history-date">${esc(h.date)}</div>
+          </div>
+          <div class="history-handle">${esc(h.handle)}</div>
+          <div class="history-top-rec">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" style="width:11px;height:11px;flex-shrink:0;">
+              <polygon points="12 2 15.09 8.26 22 9.27 17 14.14 18.18 21.02 12 17.77 5.82 21.02 7 14.14 2 9.27 8.91 8.26 12 2"/>
+            </svg>
+            ${esc(h.topRecommendation)}
+          </div>
+          <button class="history-item-del" onclick="deleteHistoryItem(event, ${h.id})">&#x2715;</button>
+        </div>
+      `).join('');
+    }
+
+    function loadHistoryItem(id) {
+      const history = getHistory();
+      const item = history.find(h => h.id === id);
+      if (!item) return;
+      currentData = item.data;
+      currentHandle = item.handle;
+      document.getElementById('searchInput').value = item.handle;
+      closeHistory();
+      setLoading(false);
+      hideAll();
+      renderResults(currentData);
+    }
+
+    function deleteHistoryItem(e, id) {
+      e.stopPropagation();
+      const history = getHistory().filter(h => h.id !== id);
+      localStorage.setItem('kn_history', JSON.stringify(history));
+      renderHistoryList();
+    }
+
+    function openHistory() {
+      renderHistoryList();
+      document.getElementById('historyOverlay').classList.add('open');
+      document.getElementById('historySidebar').classList.add('open');
+    }
+
+    function closeHistory() {
+      document.getElementById('historyOverlay').classList.remove('open');
+      document.getElementById('historySidebar').classList.remove('open');
+    }
+
+    // ============================================================
+    // TOAST
+    // ============================================================
+    function showToast(msg, type = 'success') {
+      const container = document.getElementById('toastContainer');
+      const toast = document.createElement('div');
+      toast.className = `toast ${type}`;
+      toast.innerHTML = `
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" style="width:15px;height:15px;flex-shrink:0;">
+          ${type === 'success'
+            ? '<path d="M22 11.08V12a10 10 0 1 1-5.93-9.14"/><polyline points="22 4 12 14.01 9 11.01"/>'
+            : '<circle cx="12" cy="12" r="10"/><line x1="12" y1="8" x2="12" y2="12"/><line x1="12" y1="16" x2="12.01" y2="16"/>'}
+        </svg>
+        ${esc(msg)}`;
+      container.appendChild(toast);
+      setTimeout(() => { toast.style.opacity = '0'; toast.style.transition = 'opacity 0.3s'; setTimeout(() => toast.remove(), 300); }, 3000);
+    }
+
+    // ============================================================
+    // UTILITIES
+    // ============================================================
+    function esc(str) {
+      if (str == null) return '';
+      return String(str)
+        .replace(/&/g, '&amp;')
+        .replace(/</g, '&lt;')
+        .replace(/>/g, '&gt;')
+        .replace(/"/g, '&quot;')
+        .replace(/'/g, '&#39;');
+    }
+
+    function delay(ms) { return new Promise(r => setTimeout(r, ms)); }
+
+    function fmtLargeNum(n, noUnit = false) {
+      if (n == null) return '—';
+      n = parseFloat(n);
+      if (noUnit) return n.toLocaleString('en-US', { maximumFractionDigits: 0 });
+      if (n >= 1e12) return '$' + (n / 1e12).toFixed(2) + 'T';
+      if (n >= 1e9)  return '$' + (n / 1e9).toFixed(2)  + 'B';
+      if (n >= 1e6)  return '$' + (n / 1e6).toFixed(2)  + 'M';
+      if (n >= 1e3)  return '$' + (n / 1e3).toFixed(1)  + 'K';
+      return '$' + n.toFixed(2);
+    }
+
+    function fmtPrice(n) {
+      if (n == null) return '—';
+      n = parseFloat(n);
+      if (n >= 1000)   return n.toLocaleString('en-US', { maximumFractionDigits: 2 });
+      if (n >= 1)      return n.toFixed(4);
+      if (n >= 0.0001) return n.toFixed(6);
+      return n.toExponential(4);
+    }
+
+    // ============================================================
+    // INIT
+    // ============================================================
+    loadApiKey();
+    applyLang();  // Apply saved language preference on page load
+    document.getElementById('printDate').textContent = t('generatedLabel') + ' ' + new Date().toLocaleString();
+
+  </script>
+</body>
+</html>
