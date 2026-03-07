@@ -1521,6 +1521,98 @@
     }
 
     /* ============================================================
+       CLIENT NEEDS FIELD
+    ============================================================ */
+    .client-needs-wrap {
+      max-width: 620px;
+      margin: 10px auto 0;
+      text-align: left;
+    }
+
+    .client-needs-label {
+      display: block;
+      font-size: 12px;
+      font-weight: 500;
+      color: var(--text-m);
+      margin-bottom: 7px;
+      letter-spacing: 0.2px;
+    }
+
+    #clientNeeds {
+      width: 100%;
+      background: var(--card);
+      border: 1.5px solid var(--border);
+      border-radius: var(--radius);
+      color: var(--text);
+      padding: 12px 16px;
+      font-family: 'Inter', sans-serif;
+      font-size: 13px;
+      resize: vertical;
+      min-height: 76px;
+      outline: none;
+      transition: all 0.25s;
+      line-height: 1.6;
+    }
+
+    #clientNeeds:focus {
+      border-color: var(--cyan);
+      box-shadow: 0 0 0 3px rgba(6,182,212,0.1), var(--glow-c);
+      background: rgba(15,22,41,0.95);
+    }
+
+    #clientNeeds::placeholder { color: var(--text-dim); }
+
+    .client-needs-hint {
+      font-size: 11px;
+      color: var(--text-dim);
+      margin-top: 6px;
+      display: flex;
+      align-items: flex-start;
+      gap: 5px;
+      line-height: 1.5;
+    }
+
+    /* Client needs banner in BD section */
+    .client-needs-banner {
+      padding: 16px 24px;
+      border-bottom: 1px solid var(--border);
+      background: rgba(6,182,212,0.04);
+    }
+
+    .cn-banner-label {
+      font-size: 11px;
+      text-transform: uppercase;
+      letter-spacing: 1.5px;
+      color: var(--cyan);
+      font-weight: 600;
+      margin-bottom: 7px;
+      display: flex;
+      align-items: center;
+      gap: 6px;
+    }
+
+    .cn-banner-label svg { width: 12px; height: 12px; flex-shrink: 0; }
+
+    .cn-banner-text {
+      font-size: 13px;
+      color: var(--text-m);
+      line-height: 1.6;
+      white-space: pre-wrap;
+      word-break: break-word;
+    }
+
+    /* History client needs line */
+    .history-client-needs {
+      font-size: 11px;
+      color: var(--text-dim);
+      margin-top: 5px;
+      display: flex;
+      align-items: flex-start;
+      gap: 5px;
+      line-height: 1.4;
+    }
+
+    /* ============================================================
        UTILITY
     ============================================================ */
     .divider {
@@ -1633,6 +1725,21 @@
           Research Project
         </button>
       </div>
+      <div class="client-needs-wrap">
+        <label class="client-needs-label" for="clientNeeds" data-i18n="clientNeedsLabel">Client Needs (Optional)</label>
+        <textarea
+          id="clientNeeds"
+          rows="3"
+          autocomplete="off"
+          data-i18n-placeholder="clientNeedsPlaceholder"
+          placeholder="Enter any client needs you've uncovered...&#10;  e.g. Raise $300K, Book 30 KOLs, Grow 30,000 users,&#10;  Increase TVL to $2M/week, Sell 10K presale..."
+        ></textarea>
+        <p class="client-needs-hint">
+          <span>💡</span>
+          <span data-i18n="clientNeedsHint">Adding client needs helps generate more targeted BD recommendations</span>
+        </p>
+      </div>
+
       <div class="search-examples">
         <span data-i18n="searchTry">Try:</span>
         <span class="example-chip" onclick="fillExample('@hyperliquid_x')">@hyperliquid_x</span>
@@ -1846,6 +1953,11 @@
         toastNoReport:     'No report to save',
         toastReportSaved:  'Report saved to history',
         generatedLabel:    'Generated:',
+        clientNeedsLabel:  'Client Needs (Optional)',
+        clientNeedsPlaceholder: "Enter any client needs you've uncovered...\n  e.g. Raise $300K, Book 30 KOLs, Grow 30,000 users,\n  Increase TVL to $2M/week, Sell 10K presale...",
+        clientNeedsHint:   'Adding client needs helps generate more targeted BD recommendations',
+        clientNeedsBasedOn:'Based on Client Needs',
+        clientNeedsHistLbl:'Client Needs:',
       },
       vi: {
         logoSubtitle:      'Nền Tảng Nghiên Cứu BD Web3',
@@ -1934,6 +2046,11 @@
         toastNoReport:     'Không có báo cáo để lưu',
         toastReportSaved:  'Đã lưu báo cáo vào lịch sử',
         generatedLabel:    'Tạo lúc:',
+        clientNeedsLabel:  'Nhu cầu khách hàng (Không bắt buộc)',
+        clientNeedsPlaceholder: "Nhập nhu cầu khách hàng đã khai thác được...\n  VD: Raise 300K$, Book 30 KOL, Tăng 30.000 user,\n  Tăng TVL lên 2M$/tuần, Bán 10K presale...",
+        clientNeedsHint:   'Nhập nhu cầu giúp tạo khuyến nghị BD chính xác và phù hợp hơn',
+        clientNeedsBasedOn:'Dựa Trên Nhu Cầu Khách Hàng',
+        clientNeedsHistLbl:'Nhu cầu:',
       }
     };
 
@@ -2056,13 +2173,15 @@
       if (!handle.startsWith('@')) handle = '@' + handle;
       currentHandle = handle;
 
+      const clientNeeds = document.getElementById('clientNeeds').value.trim();
+
       setLoading(true);
       hideAll();
 
       try {
         // Step 1 — Claude analysis
         animateStep(1, 'active');
-        const projectData = await analyzeWithClaude(handle, apiKey);
+        const projectData = await analyzeWithClaude(handle, apiKey, clientNeeds);
         animateStep(1, 'done');
 
         // Step 2 — CoinGecko
@@ -2080,7 +2199,7 @@
         await delay(500);
         animateStep(4, 'done');
 
-        currentData = { ...projectData, tokenMarketData: tokenData, handle };
+        currentData = { ...projectData, tokenMarketData: tokenData, handle, clientNeeds };
         setLoading(false);
         renderResults(currentData);
 
@@ -2093,12 +2212,16 @@
     // ============================================================
     // CLAUDE API
     // ============================================================
-    async function analyzeWithClaude(handle, apiKey) {
+    async function analyzeWithClaude(handle, apiKey, clientNeeds = '') {
       const systemPrompt = `You are a Web3 BD intelligence analyst. When given a Twitter/X handle, analyze the project and return a JSON object with these exact fields: projectName, website, stage, category, chains, isListed, exchanges, tokenSymbol, socialFollowers, engagementRate, activityLevel, otherSocials, socialScore, teamRegion, keyTeamMembers, fundingRounds, backers, activeCampaigns, campaignFrequency, marketingScore, bdRecommendations (array of objects with serviceName, priority, reasoning, estimatedImpact), topRecommendation, topReasoning. Base analysis on your knowledge of the project. If a field is unknown, use null or "Unknown". Return ONLY valid JSON, no markdown, no explanation.`;
 
-      const userMsg = `Analyze this Web3 project Twitter handle: ${handle}
+      let userMsg = `Analyze this Web3 project Twitter handle: ${handle}
 
 Return a comprehensive JSON analysis. For bdRecommendations, provide 4-6 services from these options: "KOL Marketing Growth", "Listing Boost", "TVL Growth Campaign", "Social Media Management", "Airdrop Campaign", "Raise Fund Support", "Community Building", "PR & Media Coverage". Each with priority (HIGH/MEDIUM/LOW), reasoning (1-2 sentences), and estimatedImpact (what they can realistically expect).`;
+
+      if (clientNeeds) {
+        userMsg += `\n\nAdditionally, the BD team has uncovered these specific client needs: ${clientNeeds}. Factor these into your BD recommendations. Prioritize services that directly address these stated needs. For each recommendation, explicitly mention if/how it addresses the client's stated goals.`;
+      }
 
       const resp = await fetch('https://api.anthropic.com/v1/messages', {
         method: 'POST',
@@ -2507,6 +2630,15 @@ Return a comprehensive JSON analysis. For bdRecommendations, provide 4-6 service
       const top = d.topRecommendation || (recs[0]?.serviceName) || 'Unknown';
       const topReasoning = d.topReasoning || d.topReasonning || (recs[0]?.reasoning) || '';
 
+      const clientNeedsBanner = d.clientNeeds ? `
+        <div class="client-needs-banner">
+          <div class="cn-banner-label">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="10"/><line x1="12" y1="8" x2="12" y2="16"/><line x1="8" y1="12" x2="16" y2="12"/></svg>
+            ${t('clientNeedsBasedOn')}
+          </div>
+          <div class="cn-banner-text">${esc(d.clientNeeds)}</div>
+        </div>` : '';
+
       const servicesHtml = recs.map((r, i) => {
         const priority = (r.priority || 'MEDIUM').toUpperCase();
         return `
@@ -2537,6 +2669,7 @@ Return a comprehensive JSON analysis. For bdRecommendations, provide 4-6 service
             <p>${t('bdSubtitle')}</p>
           </div>
         </div>
+        ${clientNeedsBanner}
         <div class="top-recommendation">
           <div class="top-rec-label">
             <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" style="width:13px;height:13px;"><polygon points="12 2 15.09 8.26 22 9.27 17 14.14 18.18 21.02 12 17.77 5.82 21.02 7 14.14 2 9.27 8.91 8.26 12 2"/></svg>
@@ -2595,6 +2728,7 @@ Return a comprehensive JSON analysis. For bdRecommendations, provide 4-6 service
       hideAll();
       document.getElementById('loadingState').classList.remove('active');
       document.getElementById('searchInput').value = '';
+      document.getElementById('clientNeeds').value = '';
       document.getElementById('searchInput').focus();
       currentData = null;
     }
@@ -2610,6 +2744,7 @@ Return a comprehensive JSON analysis. For bdRecommendations, provide 4-6 service
         handle: currentHandle,
         projectName: currentData.projectName || currentHandle,
         topRecommendation: currentData.topRecommendation || (currentData.bdRecommendations?.[0]?.serviceName) || '—',
+        clientNeeds: currentData.clientNeeds || '',
         date: new Date().toLocaleDateString(),
         data: currentData
       };
@@ -2646,6 +2781,7 @@ Return a comprehensive JSON analysis. For bdRecommendations, provide 4-6 service
             </svg>
             ${esc(h.topRecommendation)}
           </div>
+          ${h.clientNeeds ? `<div class="history-client-needs"><span style="color:var(--cyan-l);font-weight:500;flex-shrink:0;">${t('clientNeedsHistLbl')}</span> ${esc(h.clientNeeds.length > 55 ? h.clientNeeds.slice(0, 55) + '…' : h.clientNeeds)}</div>` : ''}
           <button class="history-item-del" onclick="deleteHistoryItem(event, ${h.id})">&#x2715;</button>
         </div>
       `).join('');
@@ -2658,6 +2794,7 @@ Return a comprehensive JSON analysis. For bdRecommendations, provide 4-6 service
       currentData = item.data;
       currentHandle = item.handle;
       document.getElementById('searchInput').value = item.handle;
+      document.getElementById('clientNeeds').value = item.clientNeeds || '';
       closeHistory();
       setLoading(false);
       hideAll();
