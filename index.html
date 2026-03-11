@@ -1627,6 +1627,367 @@
       font-size: 12px;
     }
 
+    /* ============================================================
+       TAB SWITCHER
+    ============================================================ */
+    .tab-nav {
+      display: flex;
+      gap: 4px;
+      margin: 24px 0 0;
+      padding: 5px;
+      background: var(--card);
+      border: 1px solid var(--border);
+      border-radius: var(--radius);
+      width: fit-content;
+    }
+
+    .tab-btn {
+      padding: 10px 22px;
+      border-radius: var(--radius-sm);
+      border: none;
+      background: transparent;
+      color: var(--text-m);
+      font-family: 'Space Grotesk', sans-serif;
+      font-size: 14px;
+      font-weight: 600;
+      cursor: pointer;
+      transition: all 0.2s;
+      white-space: nowrap;
+    }
+
+    .tab-btn.active {
+      background: linear-gradient(135deg, var(--purple), #6D28D9);
+      color: #fff;
+      box-shadow: var(--glow-p);
+    }
+
+    .tab-btn:not(.active):hover {
+      background: rgba(124,58,237,0.1);
+      color: var(--text);
+    }
+
+    .tab-panel { display: none; }
+    .tab-panel.active { display: block; }
+
+    /* ============================================================
+       EVENT PROPOSAL FORM
+    ============================================================ */
+    .event-section {
+      padding: 40px 0;
+    }
+
+    .event-eyebrow {
+      font-size: 11px;
+      letter-spacing: 3px;
+      text-transform: uppercase;
+      color: var(--cyan);
+      font-weight: 600;
+      margin-bottom: 12px;
+      text-align: center;
+    }
+
+    .event-title {
+      font-family: 'Space Grotesk', sans-serif;
+      font-size: clamp(26px, 3.5vw, 40px);
+      font-weight: 700;
+      line-height: 1.15;
+      margin-bottom: 14px;
+      text-align: center;
+    }
+
+    .event-subtitle {
+      font-size: 15px;
+      color: var(--text-m);
+      margin-bottom: 40px;
+      max-width: 520px;
+      margin-left: auto;
+      margin-right: auto;
+      line-height: 1.6;
+      text-align: center;
+    }
+
+    .event-form-card {
+      background: var(--card);
+      border: 1px solid var(--border);
+      border-radius: var(--radius);
+      padding: 32px;
+      max-width: 820px;
+      margin: 0 auto;
+    }
+
+    .event-form-grid {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 20px;
+    }
+
+    .event-form-grid .full-width { grid-column: 1 / -1; }
+
+    .form-group { display: flex; flex-direction: column; gap: 8px; }
+
+    .form-label {
+      font-size: 12px;
+      font-weight: 600;
+      color: var(--text-m);
+      text-transform: uppercase;
+      letter-spacing: 0.8px;
+    }
+
+    .form-label .required { color: var(--red); margin-left: 3px; }
+
+    .form-input,
+    .form-select,
+    .form-textarea {
+      background: var(--bg2);
+      border: 1.5px solid var(--border);
+      border-radius: var(--radius-sm);
+      color: var(--text);
+      padding: 11px 14px;
+      font-family: 'Inter', sans-serif;
+      font-size: 14px;
+      outline: none;
+      transition: all 0.25s;
+      width: 100%;
+    }
+
+    .form-input:focus,
+    .form-select:focus,
+    .form-textarea:focus {
+      border-color: var(--purple);
+      box-shadow: 0 0 0 3px rgba(124,58,237,0.12);
+      background: rgba(15,22,41,0.95);
+    }
+
+    .form-input::placeholder,
+    .form-textarea::placeholder { color: var(--text-dim); }
+
+    .form-select {
+      appearance: none;
+      background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='12' height='12' viewBox='0 0 24 24' fill='none' stroke='%2394A3B8' stroke-width='2'%3E%3Cpolyline points='6 9 12 15 18 9'/%3E%3C/svg%3E");
+      background-repeat: no-repeat;
+      background-position: right 12px center;
+      padding-right: 36px;
+      cursor: pointer;
+    }
+
+    .form-select option { background: var(--bg2); color: var(--text); }
+    .form-textarea { resize: vertical; min-height: 88px; line-height: 1.6; }
+
+    .budget-row { display: flex; gap: 8px; }
+    .budget-row .form-input { flex: 1; }
+
+    .budget-currency { display: flex; gap: 4px; align-items: center; }
+
+    .currency-btn {
+      padding: 11px 14px;
+      border-radius: var(--radius-sm);
+      border: 1.5px solid var(--border);
+      background: var(--bg2);
+      color: var(--text-m);
+      font-family: 'Inter', sans-serif;
+      font-size: 13px;
+      font-weight: 600;
+      cursor: pointer;
+      transition: all 0.2s;
+    }
+
+    .currency-btn.active {
+      background: rgba(124,58,237,0.2);
+      border-color: var(--purple);
+      color: var(--purple-l);
+    }
+
+    .currency-btn:not(.active):hover {
+      border-color: rgba(124,58,237,0.4);
+      color: var(--text);
+    }
+
+    .btn-generate {
+      width: 100%;
+      margin-top: 24px;
+      background: linear-gradient(135deg, var(--purple) 0%, #6D28D9 50%, var(--cyan) 100%);
+      background-size: 200% 200%;
+      border: none;
+      color: #fff;
+      padding: 16px 28px;
+      border-radius: var(--radius);
+      font-family: 'Space Grotesk', sans-serif;
+      font-size: 15px;
+      font-weight: 700;
+      letter-spacing: 0.5px;
+      cursor: pointer;
+      transition: all 0.3s;
+      text-transform: uppercase;
+      position: relative;
+      overflow: hidden;
+    }
+
+    .btn-generate:hover {
+      box-shadow: 0 0 30px rgba(124,58,237,0.5), 0 0 60px rgba(6,182,212,0.2);
+      background-position: right center;
+      transform: translateY(-1px);
+    }
+
+    .btn-generate:active { transform: translateY(0); }
+    .btn-generate:disabled { opacity: 0.5; cursor: not-allowed; transform: none; }
+
+    /* ============================================================
+       EVENT PROPOSAL LOADING
+    ============================================================ */
+    .event-loading { display: none; padding: 60px 0; text-align: center; }
+    .event-loading.active { display: block; }
+
+    .event-spin {
+      width: 52px;
+      height: 52px;
+      border: 3px solid rgba(124,58,237,0.2);
+      border-top-color: var(--purple);
+      border-radius: 50%;
+      margin: 0 auto 20px;
+      animation: spin 0.8s linear infinite;
+    }
+
+    @keyframes spin { to { transform: rotate(360deg); } }
+
+    .event-loading-text {
+      font-family: 'Space Grotesk', sans-serif;
+      font-size: 18px;
+      font-weight: 600;
+      color: var(--text);
+      margin-bottom: 8px;
+    }
+
+    .event-loading-sub { font-size: 13px; color: var(--text-m); }
+
+    /* ============================================================
+       EVENT PROPOSAL OUTPUT
+    ============================================================ */
+    .event-proposal { display: none; max-width: 920px; margin: 40px auto 0; }
+    .event-proposal.active { display: block; }
+
+    .proposal-header {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      margin-bottom: 28px;
+      flex-wrap: wrap;
+      gap: 12px;
+    }
+
+    .proposal-title-wrap h2 {
+      font-family: 'Space Grotesk', sans-serif;
+      font-size: 22px;
+      font-weight: 700;
+      background: linear-gradient(90deg, var(--purple-l), var(--cyan-l));
+      -webkit-background-clip: text;
+      -webkit-text-fill-color: transparent;
+      background-clip: text;
+    }
+
+    .proposal-title-wrap p { font-size: 13px; color: var(--text-m); margin-top: 4px; }
+
+    .proposal-actions { display: flex; gap: 8px; }
+
+    .proposal-section {
+      background: var(--card);
+      border: 1px solid var(--border);
+      border-radius: var(--radius);
+      margin-bottom: 20px;
+      overflow: hidden;
+    }
+
+    .proposal-section-header {
+      padding: 16px 24px;
+      border-bottom: 1px solid var(--border);
+      display: flex;
+      align-items: center;
+      gap: 10px;
+      background: rgba(124,58,237,0.04);
+    }
+
+    .proposal-section-header .section-icon {
+      width: 32px;
+      height: 32px;
+      border-radius: 8px;
+      background: linear-gradient(135deg, rgba(124,58,237,0.2), rgba(6,182,212,0.1));
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 15px;
+      flex-shrink: 0;
+    }
+
+    .proposal-section-header h3 {
+      font-family: 'Space Grotesk', sans-serif;
+      font-size: 14px;
+      font-weight: 700;
+      text-transform: uppercase;
+      letter-spacing: 0.8px;
+      color: var(--text);
+    }
+
+    .proposal-section-body { padding: 24px; }
+
+    .event-name-card {
+      background: var(--bg2);
+      border: 1px solid var(--border);
+      border-radius: var(--radius-sm);
+      padding: 16px 20px;
+      margin-bottom: 12px;
+    }
+
+    .event-name-card:last-child { margin-bottom: 0; }
+    .event-name-card .name-number { font-size: 11px; font-weight: 700; text-transform: uppercase; letter-spacing: 1px; color: var(--cyan); margin-bottom: 6px; }
+    .event-name-card .name-title { font-family: 'Space Grotesk', sans-serif; font-size: 17px; font-weight: 700; color: var(--text); margin-bottom: 6px; }
+    .event-name-card .name-tagline { font-size: 13px; color: var(--text-m); font-style: italic; }
+
+    .venue-table { width: 100%; border-collapse: collapse; font-size: 13px; }
+    .venue-table th { text-align: left; padding: 10px 14px; font-size: 11px; font-weight: 700; text-transform: uppercase; letter-spacing: 0.8px; color: var(--text-m); border-bottom: 1px solid var(--border); }
+    .venue-table td { padding: 12px 14px; border-bottom: 1px solid rgba(124,58,237,0.08); color: var(--text); line-height: 1.5; }
+    .venue-table tr:last-child td { border-bottom: none; }
+    .venue-table tr:hover td { background: rgba(124,58,237,0.04); }
+
+    .venue-rec-badge { font-size: 10px; font-weight: 700; padding: 2px 7px; border-radius: 10px; text-transform: uppercase; letter-spacing: 0.5px; margin-left: 6px; }
+    .badge-best { background: rgba(16,185,129,0.15); color: var(--green); }
+    .badge-mid  { background: rgba(245,158,11,0.15); color: var(--yellow); }
+    .badge-alt  { background: rgba(124,58,237,0.15); color: var(--purple-l); }
+
+    .ros-item { display: flex; gap: 16px; padding: 12px 0; border-bottom: 1px solid rgba(124,58,237,0.08); }
+    .ros-item:last-child { border-bottom: none; }
+    .ros-time { font-family: 'Space Grotesk', sans-serif; font-size: 13px; font-weight: 700; color: var(--cyan); white-space: nowrap; min-width: 80px; }
+    .ros-activity { font-size: 13px; color: var(--text); line-height: 1.5; }
+
+    .guest-breakdown { display: grid; grid-template-columns: repeat(auto-fit, minmax(160px, 1fr)); gap: 12px; margin-top: 14px; }
+    .guest-seg { background: var(--bg2); border: 1px solid var(--border); border-radius: var(--radius-sm); padding: 14px 16px; text-align: center; }
+    .guest-seg .seg-pct { font-family: 'Space Grotesk', sans-serif; font-size: 22px; font-weight: 700; background: linear-gradient(90deg, var(--purple-l), var(--cyan-l)); -webkit-background-clip: text; -webkit-text-fill-color: transparent; background-clip: text; }
+    .guest-seg .seg-label { font-size: 12px; color: var(--text-m); margin-top: 4px; }
+
+    .why-attend-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 16px; }
+    .why-lang-block { background: var(--bg2); border: 1px solid var(--border); border-radius: var(--radius-sm); padding: 16px; }
+    .why-lang-label { font-size: 11px; font-weight: 700; text-transform: uppercase; letter-spacing: 1px; color: var(--cyan); margin-bottom: 10px; }
+    .why-item { display: flex; gap: 8px; align-items: flex-start; margin-bottom: 8px; font-size: 13px; color: var(--text-m); line-height: 1.5; }
+    .why-item:last-child { margin-bottom: 0; }
+    .why-item::before { content: '✦'; color: var(--purple-l); font-size: 10px; margin-top: 3px; flex-shrink: 0; }
+
+    .partner-card { background: var(--bg2); border: 1px solid var(--border); border-radius: var(--radius-sm); padding: 14px 16px; margin-bottom: 10px; }
+    .partner-card:last-child { margin-bottom: 0; }
+    .partner-type { font-size: 11px; font-weight: 700; text-transform: uppercase; letter-spacing: 1px; color: var(--purple-l); margin-bottom: 5px; }
+    .partner-desc { font-size: 13px; color: var(--text-m); line-height: 1.5; }
+
+    .budget-table { width: 100%; border-collapse: collapse; }
+    .budget-table th { text-align: left; padding: 10px 14px; font-size: 11px; font-weight: 700; text-transform: uppercase; letter-spacing: 0.8px; color: var(--text-m); border-bottom: 1px solid var(--border); }
+    .budget-table td { padding: 12px 14px; border-bottom: 1px solid rgba(124,58,237,0.08); font-size: 13px; color: var(--text); }
+    .budget-table tr:last-child td { border-bottom: none; }
+    .budget-table tr:hover td { background: rgba(124,58,237,0.04); }
+    .budget-bar-wrap { width: 100%; height: 6px; background: rgba(124,58,237,0.12); border-radius: 3px; overflow: hidden; }
+    .budget-bar { height: 100%; background: linear-gradient(90deg, var(--purple), var(--cyan)); border-radius: 3px; transition: width 0.8s ease; }
+
+    @media (max-width: 640px) {
+      .event-form-grid { grid-template-columns: 1fr; }
+      .why-attend-grid { grid-template-columns: 1fr; }
+      .budget-row { flex-direction: column; }
+    }
+
     .token-not-listed {
       text-align: center;
       padding: 30px 0;
@@ -1697,6 +2058,15 @@
         <span id="apiStatusText" data-i18n="apiNoKey">No Key</span>
       </div>
     </div>
+
+    <!-- TAB SWITCHER -->
+    <div class="tab-nav" id="tabNav">
+      <button class="tab-btn active" id="tabBtnResearch" onclick="switchTab('research')" data-i18n="tabResearch">🔍 Project Research</button>
+      <button class="tab-btn" id="tabBtnEvent" onclick="switchTab('event')" data-i18n="tabEvent">🎪 Event Proposal</button>
+    </div>
+
+    <!-- TAB: PROJECT RESEARCH -->
+    <div id="tab-research" class="tab-panel active">
 
     <!-- SEARCH SECTION -->
     <section class="search-section">
@@ -1844,6 +2214,188 @@
       </div>
     </div>
 
+    </div><!-- /.tab-research -->
+
+    <!-- TAB: EVENT PROPOSAL -->
+    <div id="tab-event" class="tab-panel">
+
+      <section class="event-section">
+        <p class="event-eyebrow" data-i18n="evtEyebrow">AI Event Intelligence</p>
+        <h2 class="event-title">
+          <span data-i18n="evtTitle1">Plan Your</span><br>
+          <span class="title-gradient" data-i18n="evtTitle2">Perfect Event</span>
+        </h2>
+        <p class="event-subtitle" data-i18n="evtSubtitle">Enter event details to generate a complete proposal — venue recommendations, run-of-show, guest strategy, and budget breakdown.</p>
+
+        <div class="event-form-card">
+          <div class="event-form-grid">
+
+            <!-- Twitter Handle -->
+            <div class="form-group">
+              <label class="form-label"><span data-i18n="evtTwitterLabel">Twitter Handle</span><span class="required">*</span></label>
+              <input type="text" class="form-input" id="evtHandle" data-i18n-placeholder="evtTwitterPlaceholder" placeholder="@yourproject" autocomplete="off">
+            </div>
+
+            <!-- Event Type -->
+            <div class="form-group">
+              <label class="form-label"><span data-i18n="evtTypeLabel">Event Type</span><span class="required">*</span></label>
+              <select class="form-select" id="evtType">
+                <option value="">— Select —</option>
+                <option value="Workshop">Workshop</option>
+                <option value="Networking">Networking</option>
+                <option value="Product Launch">Product Launch</option>
+                <option value="Gala Dinner">Gala Dinner</option>
+                <option value="Coffee &amp; Connect">Coffee &amp; Connect</option>
+                <option value="Conference">Conference</option>
+              </select>
+            </div>
+
+            <!-- Scale -->
+            <div class="form-group">
+              <label class="form-label"><span data-i18n="evtScaleLabel">Scale</span><span class="required">*</span></label>
+              <select class="form-select" id="evtScale">
+                <option value="">— Select —</option>
+                <option value="Small (<50 pax)">Small (&lt;50 pax)</option>
+                <option value="Medium (50-150 pax)">Medium (50–150 pax)</option>
+                <option value="Large (150-500 pax)">Large (150–500 pax)</option>
+              </select>
+            </div>
+
+            <!-- Location -->
+            <div class="form-group">
+              <label class="form-label"><span data-i18n="evtLocationLabel">Location / City</span><span class="required">*</span></label>
+              <input type="text" class="form-input" id="evtLocation" data-i18n-placeholder="evtLocationPlaceholder" placeholder="e.g. Ho Chi Minh City" autocomplete="off">
+            </div>
+
+            <!-- Target Audience -->
+            <div class="form-group full-width">
+              <label class="form-label" data-i18n="evtAudienceLabel">Target Audience</label>
+              <textarea class="form-textarea" id="evtAudience" rows="2" data-i18n-placeholder="evtAudiencePlaceholder" placeholder="Describe your target attendees..."></textarea>
+            </div>
+
+            <!-- Event Goals -->
+            <div class="form-group full-width">
+              <label class="form-label" data-i18n="evtGoalsLabel">Event Goals</label>
+              <textarea class="form-textarea" id="evtGoals" rows="2" data-i18n-placeholder="evtGoalsPlaceholder" placeholder="What do you want to achieve?"></textarea>
+            </div>
+
+            <!-- Budget -->
+            <div class="form-group full-width">
+              <label class="form-label"><span data-i18n="evtBudgetLabel">Budget</span><span class="required">*</span></label>
+              <div class="budget-row">
+                <input type="number" class="form-input" id="evtBudget" data-i18n-placeholder="evtBudgetPlaceholder" placeholder="e.g. 50000" min="0">
+                <div class="budget-currency">
+                  <button class="currency-btn active" id="currencyUSD" onclick="selectCurrency('USD')">USD</button>
+                  <button class="currency-btn" id="currencyVND" onclick="selectCurrency('VND')">VND</button>
+                </div>
+              </div>
+            </div>
+
+            <!-- Notes -->
+            <div class="form-group full-width">
+              <label class="form-label" data-i18n="evtNotesLabel">Additional Notes (Optional)</label>
+              <textarea class="form-textarea" id="evtNotes" rows="2" data-i18n-placeholder="evtNotesPlaceholder" placeholder="Any special requirements, themes, or preferences..."></textarea>
+            </div>
+
+          </div><!-- /.event-form-grid -->
+          <button class="btn-generate" id="evtGenerateBtn" onclick="generateProposal()" data-i18n="evtGenerateBtn">GENERATE PROPOSAL</button>
+        </div><!-- /.event-form-card -->
+      </section>
+
+      <!-- EVENT LOADING -->
+      <div class="event-loading" id="evtLoading">
+        <div class="event-spin"></div>
+        <div class="event-loading-text" data-i18n="evtLoadingText">Crafting Your Proposal...</div>
+        <div class="event-loading-sub" data-i18n="evtLoadingSub">AI is designing your perfect event</div>
+      </div>
+
+      <!-- EVENT PROPOSAL OUTPUT -->
+      <div class="event-proposal" id="evtProposal">
+
+        <div class="proposal-header">
+          <div class="proposal-title-wrap">
+            <h2 id="evtProposalTitle"></h2>
+            <p id="evtProposalSub"></p>
+          </div>
+          <div class="proposal-actions">
+            <button class="btn-action save" onclick="exportProposalPdf()">
+              <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="6 9 6 2 18 2 18 9"/><path d="M6 18H4a2 2 0 0 1-2-2v-5a2 2 0 0 1 2-2h16a2 2 0 0 1 2 2v5a2 2 0 0 1-2 2h-2"/><rect x="6" y="14" width="12" height="8"/></svg>
+              <span data-i18n="evtExportPdf">Export PDF</span>
+            </button>
+            <button class="btn-action" onclick="resetEventForm()">
+              <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M3 12a9 9 0 0 1 9-9 9.75 9.75 0 0 1 6.74 2.74L21 8"/><path d="M21 3v5h-5"/><path d="M21 12a9 9 0 0 1-9 9 9.75 9.75 0 0 1-6.74-2.74L3 16"/></svg>
+              <span data-i18n="evtNewProposal">New Proposal</span>
+            </button>
+          </div>
+        </div>
+
+        <!-- Event Names -->
+        <div class="proposal-section">
+          <div class="proposal-section-header">
+            <div class="section-icon">🎯</div>
+            <h3 data-i18n="evtNames">Event Name Suggestions</h3>
+          </div>
+          <div class="proposal-section-body" id="evtNamesBody"></div>
+        </div>
+
+        <!-- Venues -->
+        <div class="proposal-section">
+          <div class="proposal-section-header">
+            <div class="section-icon">🏛️</div>
+            <h3 data-i18n="evtVenues">Venue Recommendations</h3>
+          </div>
+          <div class="proposal-section-body" id="evtVenuesBody" style="padding:0;overflow-x:auto;"></div>
+        </div>
+
+        <!-- Run of Show -->
+        <div class="proposal-section">
+          <div class="proposal-section-header">
+            <div class="section-icon">📋</div>
+            <h3 data-i18n="evtRunOfShow">Event Format &amp; Run-of-Show</h3>
+          </div>
+          <div class="proposal-section-body" id="evtRunBody"></div>
+        </div>
+
+        <!-- Guest List -->
+        <div class="proposal-section">
+          <div class="proposal-section-header">
+            <div class="section-icon">👥</div>
+            <h3 data-i18n="evtGuestList">Guest List Strategy</h3>
+          </div>
+          <div class="proposal-section-body" id="evtGuestBody"></div>
+        </div>
+
+        <!-- Why Attend -->
+        <div class="proposal-section">
+          <div class="proposal-section-header">
+            <div class="section-icon">✨</div>
+            <h3 data-i18n="evtWhyAttend">Why Attend?</h3>
+          </div>
+          <div class="proposal-section-body" id="evtWhyBody"></div>
+        </div>
+
+        <!-- Partnerships -->
+        <div class="proposal-section">
+          <div class="proposal-section-header">
+            <div class="section-icon">🤝</div>
+            <h3 data-i18n="evtPartnerships">Partnership Opportunities</h3>
+          </div>
+          <div class="proposal-section-body" id="evtPartnerBody"></div>
+        </div>
+
+        <!-- Budget -->
+        <div class="proposal-section">
+          <div class="proposal-section-header">
+            <div class="section-icon">💰</div>
+            <h3 data-i18n="evtBudget">Budget Breakdown</h3>
+          </div>
+          <div class="proposal-section-body" id="evtBudgetBody" style="padding:0;overflow-x:auto;"></div>
+        </div>
+
+      </div><!-- /.event-proposal -->
+
+    </div><!-- /.tab-event -->
+
   </div><!-- /.app -->
 
   <!-- HISTORY SIDEBAR -->
@@ -1958,6 +2510,54 @@
         clientNeedsHint:   'Adding client needs helps generate more targeted BD recommendations',
         clientNeedsBasedOn:'Based on Client Needs',
         clientNeedsHistLbl:'Client Needs:',
+        // Event Proposal tab
+        tabResearch:       '🔍 Project Research',
+        tabEvent:          '🎪 Event Proposal',
+        evtEyebrow:        'AI Event Intelligence',
+        evtTitle1:         'Plan Your',
+        evtTitle2:         'Perfect Event',
+        evtSubtitle:       'Enter event details to generate a complete proposal — venue recommendations, run-of-show, guest strategy, and budget breakdown.',
+        evtTwitterLabel:   'Twitter Handle',
+        evtTwitterPlaceholder: '@yourproject',
+        evtTypeLabel:      'Event Type',
+        evtScaleLabel:     'Scale',
+        evtLocationLabel:  'Location / City',
+        evtLocationPlaceholder: 'e.g. Ho Chi Minh City, Singapore',
+        evtAudienceLabel:  'Target Audience',
+        evtAudiencePlaceholder: 'Describe your target attendees (industry, role, interest...)',
+        evtGoalsLabel:     'Event Goals',
+        evtGoalsPlaceholder: 'What do you want to achieve? (Leads, brand awareness, community...)',
+        evtBudgetLabel:    'Budget',
+        evtBudgetPlaceholder: 'e.g. 50000',
+        evtNotesLabel:     'Additional Notes (Optional)',
+        evtNotesPlaceholder: 'Any special requirements, themes, or preferences...',
+        evtGenerateBtn:    'GENERATE PROPOSAL',
+        evtLoadingText:    'Crafting Your Proposal...',
+        evtLoadingSub:     'AI is designing your perfect event',
+        evtNeedKey:        'Please enter your Claude API key first',
+        evtNeedHandle:     'Please enter a Twitter handle',
+        evtNeedType:       'Please select an event type',
+        evtNeedScale:      'Please select event scale',
+        evtNeedLocation:   'Please enter event location',
+        evtNeedBudget:     'Please enter a budget amount',
+        evtNames:          'Event Name Suggestions',
+        evtVenues:         'Venue Recommendations',
+        evtRunOfShow:      'Event Format & Run-of-Show',
+        evtGuestList:      'Guest List Strategy',
+        evtWhyAttend:      'Why Attend?',
+        evtPartnerships:   'Partnership Opportunities',
+        evtBudget:         'Budget Breakdown',
+        evtExportPdf:      'Export PDF',
+        evtNewProposal:    'New Proposal',
+        evtProposalFor:    'Event Proposal for',
+        evtVenueName:      'Venue',
+        evtVenueType:      'Type',
+        evtVenueCap:       'Capacity',
+        evtVenueCost:      'Est. Cost',
+        evtVenueNote:      'Notes',
+        evtBudgetItem:     'Item',
+        evtBudgetPct:      '%',
+        evtBudgetAmt:      'Amount',
       },
       vi: {
         logoSubtitle:      'Nền Tảng Nghiên Cứu BD Web3',
@@ -2051,6 +2651,54 @@
         clientNeedsHint:   'Nhập nhu cầu giúp tạo khuyến nghị BD chính xác và phù hợp hơn',
         clientNeedsBasedOn:'Dựa Trên Nhu Cầu Khách Hàng',
         clientNeedsHistLbl:'Nhu cầu:',
+        // Event Proposal tab
+        tabResearch:       '🔍 Nghiên Cứu Dự Án',
+        tabEvent:          '🎪 Đề Xuất Sự Kiện',
+        evtEyebrow:        'AI Thiết Kế Sự Kiện',
+        evtTitle1:         'Lên Kế Hoạch',
+        evtTitle2:         'Sự Kiện Hoàn Hảo',
+        evtSubtitle:       'Nhập thông tin sự kiện để tạo đề xuất hoàn chỉnh — gợi ý địa điểm, kịch bản chương trình, chiến lược khách mời và phân bổ ngân sách.',
+        evtTwitterLabel:   'Twitter Handle',
+        evtTwitterPlaceholder: '@yourproject',
+        evtTypeLabel:      'Loại Sự Kiện',
+        evtScaleLabel:     'Quy Mô',
+        evtLocationLabel:  'Địa Điểm / Thành Phố',
+        evtLocationPlaceholder: 'VD: TP. Hồ Chí Minh, Singapore',
+        evtAudienceLabel:  'Đối Tượng Tham Dự',
+        evtAudiencePlaceholder: 'Mô tả đối tượng mục tiêu (ngành nghề, vai trò, sở thích...)',
+        evtGoalsLabel:     'Mục Tiêu Sự Kiện',
+        evtGoalsPlaceholder: 'Bạn muốn đạt được gì? (Leads, thương hiệu, cộng đồng...)',
+        evtBudgetLabel:    'Ngân Sách',
+        evtBudgetPlaceholder: 'VD: 50000',
+        evtNotesLabel:     'Ghi Chú Thêm (Không Bắt Buộc)',
+        evtNotesPlaceholder: 'Yêu cầu đặc biệt, chủ đề, hoặc sở thích...',
+        evtGenerateBtn:    'TẠO ĐỀ XUẤT',
+        evtLoadingText:    'Đang Soạn Thảo Đề Xuất...',
+        evtLoadingSub:     'AI đang thiết kế sự kiện hoàn hảo cho bạn',
+        evtNeedKey:        'Vui lòng nhập Claude API key trước',
+        evtNeedHandle:     'Vui lòng nhập Twitter handle',
+        evtNeedType:       'Vui lòng chọn loại sự kiện',
+        evtNeedScale:      'Vui lòng chọn quy mô sự kiện',
+        evtNeedLocation:   'Vui lòng nhập địa điểm',
+        evtNeedBudget:     'Vui lòng nhập ngân sách',
+        evtNames:          'Gợi Ý Tên Sự Kiện',
+        evtVenues:         'Gợi Ý Địa Điểm',
+        evtRunOfShow:      'Kịch Bản & Lịch Trình',
+        evtGuestList:      'Chiến Lược Danh Sách Khách',
+        evtWhyAttend:      'Tại Sao Nên Tham Dự?',
+        evtPartnerships:   'Cơ Hội Đối Tác',
+        evtBudget:         'Phân Bổ Ngân Sách',
+        evtExportPdf:      'Xuất PDF',
+        evtNewProposal:    'Đề Xuất Mới',
+        evtProposalFor:    'Đề Xuất Sự Kiện cho',
+        evtVenueName:      'Địa Điểm',
+        evtVenueType:      'Loại',
+        evtVenueCap:       'Sức Chứa',
+        evtVenueCost:      'Chi Phí Dự Kiến',
+        evtVenueNote:      'Ghi Chú',
+        evtBudgetItem:     'Hạng Mục',
+        evtBudgetPct:      '%',
+        evtBudgetAmt:      'Số Tiền',
       }
     };
 
@@ -2870,6 +3518,299 @@ Return a comprehensive JSON analysis. For bdRecommendations, provide 4-6 service
       if (n >= 1)      return n.toFixed(4);
       if (n >= 0.0001) return n.toFixed(6);
       return n.toExponential(4);
+    }
+
+    // ============================================================
+    // TAB SWITCHING
+    // ============================================================
+    function switchTab(tab) {
+      document.getElementById('tab-research').classList.toggle('active', tab === 'research');
+      document.getElementById('tab-event').classList.toggle('active', tab === 'event');
+      document.getElementById('tabBtnResearch').classList.toggle('active', tab === 'research');
+      document.getElementById('tabBtnEvent').classList.toggle('active', tab === 'event');
+    }
+
+    // ============================================================
+    // EVENT PROPOSAL
+    // ============================================================
+    let currentCurrency = 'USD';
+    let currentProposal = null;
+
+    function selectCurrency(cur) {
+      currentCurrency = cur;
+      document.getElementById('currencyUSD').classList.toggle('active', cur === 'USD');
+      document.getElementById('currencyVND').classList.toggle('active', cur === 'VND');
+    }
+
+    async function generateProposal() {
+      const apiKey = getApiKey();
+      if (!apiKey) { showToast(t('evtNeedKey'), 'error'); return; }
+
+      const handle = document.getElementById('evtHandle').value.trim();
+      if (!handle) { showToast(t('evtNeedHandle'), 'error'); return; }
+
+      const eventType = document.getElementById('evtType').value;
+      if (!eventType) { showToast(t('evtNeedType'), 'error'); return; }
+
+      const scale = document.getElementById('evtScale').value;
+      if (!scale) { showToast(t('evtNeedScale'), 'error'); return; }
+
+      const location = document.getElementById('evtLocation').value.trim();
+      if (!location) { showToast(t('evtNeedLocation'), 'error'); return; }
+
+      const budget = document.getElementById('evtBudget').value.trim();
+      if (!budget) { showToast(t('evtNeedBudget'), 'error'); return; }
+
+      const audience = document.getElementById('evtAudience').value.trim();
+      const goals    = document.getElementById('evtGoals').value.trim();
+      const notes    = document.getElementById('evtNotes').value.trim();
+
+      document.getElementById('evtLoading').classList.add('active');
+      document.getElementById('evtProposal').classList.remove('active');
+      const genBtn = document.getElementById('evtGenerateBtn');
+      genBtn.disabled = true;
+      genBtn.textContent = t('evtLoadingText');
+
+      try {
+        const proposal = await callClaudeForProposal({
+          handle, eventType, scale, location,
+          audience: audience || 'Web3 community, investors, builders',
+          goals:    goals    || 'Brand awareness, networking, community building',
+          budget:   `${budget} ${currentCurrency}`,
+          notes, apiKey
+        });
+        currentProposal = proposal;
+        renderProposal(proposal, { handle, eventType, scale, location, budget, currency: currentCurrency });
+      } catch (err) {
+        showToast(err.message || t('errorDefault'), 'error');
+      } finally {
+        document.getElementById('evtLoading').classList.remove('active');
+        genBtn.disabled = false;
+        genBtn.textContent = t('evtGenerateBtn');
+      }
+    }
+
+    async function callClaudeForProposal({ handle, eventType, scale, location, audience, goals, budget, notes, apiKey }) {
+      const prompt = `You are an expert event planner and BD strategist for Web3/tech companies. Generate a comprehensive event proposal.
+
+Project Twitter Handle: ${handle}
+Event Type: ${eventType}
+Scale: ${scale}
+Location: ${location}
+Target Audience: ${audience}
+Event Goals: ${goals}
+Total Budget: ${budget}
+Additional Notes: ${notes || 'None'}
+
+Return ONLY a valid JSON object with this exact structure (no markdown, no explanation):
+{
+  "eventNames": [
+    {"name": "string", "tagline": "string"},
+    {"name": "string", "tagline": "string"},
+    {"name": "string", "tagline": "string"}
+  ],
+  "venues": [
+    {"name": "string", "type": "string", "capacity": "string", "estimatedCost": "string", "note": "string", "tier": "best"},
+    {"name": "string", "type": "string", "capacity": "string", "estimatedCost": "string", "note": "string", "tier": "mid"},
+    {"name": "string", "type": "string", "capacity": "string", "estimatedCost": "string", "note": "string", "tier": "alt"},
+    {"name": "string", "type": "string", "capacity": "string", "estimatedCost": "string", "note": "string", "tier": "alt"},
+    {"name": "string", "type": "string", "capacity": "string", "estimatedCost": "string", "note": "string", "tier": "alt"}
+  ],
+  "runOfShow": [
+    {"time": "string", "activity": "string", "details": "string"}
+  ],
+  "guestStrategy": {
+    "overview": "string",
+    "segments": [
+      {"label": "string", "percentage": 30, "description": "string"},
+      {"label": "string", "percentage": 25, "description": "string"},
+      {"label": "string", "percentage": 20, "description": "string"},
+      {"label": "string", "percentage": 15, "description": "string"},
+      {"label": "string", "percentage": 10, "description": "string"}
+    ]
+  },
+  "whyAttendEN": ["string", "string", "string", "string", "string"],
+  "whyAttendVI": ["string", "string", "string", "string", "string"],
+  "partnerships": [
+    {"type": "string", "description": "string"},
+    {"type": "string", "description": "string"},
+    {"type": "string", "description": "string"},
+    {"type": "string", "description": "string"},
+    {"type": "string", "description": "string"}
+  ],
+  "budgetBreakdown": [
+    {"item": "Venue", "percentage": 35, "amount": "string"},
+    {"item": "F&B", "percentage": 20, "amount": "string"},
+    {"item": "Speakers & Entertainment", "percentage": 15, "amount": "string"},
+    {"item": "Marketing & Promotion", "percentage": 15, "amount": "string"},
+    {"item": "Photo & Video", "percentage": 8, "amount": "string"},
+    {"item": "Miscellaneous", "percentage": 7, "amount": "string"}
+  ]
+}
+
+Guidelines:
+- Suggest real, realistic venues in or near ${location}
+- Run-of-show should have 8-12 time slots
+- Guest segments must sum to 100%
+- Budget amounts should be calculated from total budget ${budget}
+- whyAttendVI must be in Vietnamese`;
+
+      const resp = await fetch('https://api.anthropic.com/v1/messages', {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+          'x-api-key': apiKey,
+          'anthropic-version': '2023-06-01',
+          'anthropic-dangerous-direct-browser-access': 'true'
+        },
+        body: JSON.stringify({
+          model: 'claude-sonnet-4-20250514',
+          max_tokens: 4096,
+          messages: [{ role: 'user', content: prompt }]
+        })
+      });
+
+      if (!resp.ok) {
+        const errData = await resp.json().catch(() => ({}));
+        throw new Error(errData.error?.message || `API error ${resp.status}`);
+      }
+
+      const data = await resp.json();
+      const raw = data.content?.[0]?.text || '';
+
+      let jsonStr = raw.trim();
+      const fenceMatch = jsonStr.match(/```(?:json)?\s*([\s\S]*?)\s*```/);
+      if (fenceMatch) jsonStr = fenceMatch[1];
+      const objMatch = jsonStr.match(/\{[\s\S]*\}/);
+      if (objMatch) jsonStr = objMatch[0];
+
+      return JSON.parse(jsonStr);
+    }
+
+    function renderProposal(p, meta) {
+      document.getElementById('evtProposalTitle').textContent = `${t('evtProposalFor')} ${meta.handle}`;
+      document.getElementById('evtProposalSub').textContent = `${meta.eventType} · ${meta.scale} · ${meta.location}`;
+
+      // Event Names
+      document.getElementById('evtNamesBody').innerHTML = (p.eventNames || []).map((n, i) => `
+        <div class="event-name-card">
+          <div class="name-number">Option ${i + 1}</div>
+          <div class="name-title">${esc(n.name)}</div>
+          <div class="name-tagline">"${esc(n.tagline)}"</div>
+        </div>
+      `).join('');
+
+      // Venues
+      document.getElementById('evtVenuesBody').innerHTML = `
+        <table class="venue-table">
+          <thead><tr>
+            <th>${t('evtVenueName')}</th>
+            <th>${t('evtVenueType')}</th>
+            <th>${t('evtVenueCap')}</th>
+            <th>${t('evtVenueCost')}</th>
+            <th>${t('evtVenueNote')}</th>
+          </tr></thead>
+          <tbody>
+            ${(p.venues || []).map(v => `
+              <tr>
+                <td><strong>${esc(v.name)}</strong><span class="venue-rec-badge ${v.tier === 'best' ? 'badge-best' : v.tier === 'mid' ? 'badge-mid' : 'badge-alt'}">${v.tier === 'best' ? '★ Best' : v.tier === 'mid' ? '◆ Mid' : '● Alt'}</span></td>
+                <td>${esc(v.type)}</td>
+                <td>${esc(v.capacity)}</td>
+                <td>${esc(v.estimatedCost)}</td>
+                <td style="color:var(--text-m)">${esc(v.note)}</td>
+              </tr>
+            `).join('')}
+          </tbody>
+        </table>
+      `;
+
+      // Run of Show
+      document.getElementById('evtRunBody').innerHTML = (p.runOfShow || []).map(r => `
+        <div class="ros-item">
+          <div class="ros-time">${esc(r.time)}</div>
+          <div class="ros-activity"><strong>${esc(r.activity)}</strong>${r.details ? ` — ${esc(r.details)}` : ''}</div>
+        </div>
+      `).join('');
+
+      // Guest List
+      const gs = p.guestStrategy || {};
+      document.getElementById('evtGuestBody').innerHTML = `
+        <p style="font-size:14px;color:var(--text-m);line-height:1.7;margin-bottom:16px;">${esc(gs.overview || '')}</p>
+        <div class="guest-breakdown">
+          ${(gs.segments || []).map(s => `
+            <div class="guest-seg">
+              <div class="seg-pct">${s.percentage}%</div>
+              <div class="seg-label">${esc(s.label)}</div>
+              <div style="font-size:11px;color:var(--text-dim);margin-top:4px;">${esc(s.description)}</div>
+            </div>
+          `).join('')}
+        </div>
+      `;
+
+      // Why Attend
+      const enItems = (p.whyAttendEN || []).map(i => `<div class="why-item">${esc(i)}</div>`).join('');
+      const viItems = (p.whyAttendVI || []).map(i => `<div class="why-item">${esc(i)}</div>`).join('');
+      document.getElementById('evtWhyBody').innerHTML = `
+        <div class="why-attend-grid">
+          <div class="why-lang-block">
+            <div class="why-lang-label">English</div>
+            ${enItems}
+          </div>
+          <div class="why-lang-block">
+            <div class="why-lang-label">Tiếng Việt</div>
+            ${viItems}
+          </div>
+        </div>
+      `;
+
+      // Partnerships
+      document.getElementById('evtPartnerBody').innerHTML = (p.partnerships || []).map(pt => `
+        <div class="partner-card">
+          <div class="partner-type">${esc(pt.type)}</div>
+          <div class="partner-desc">${esc(pt.description)}</div>
+        </div>
+      `).join('');
+
+      // Budget
+      document.getElementById('evtBudgetBody').innerHTML = `
+        <table class="budget-table">
+          <thead><tr>
+            <th>${t('evtBudgetItem')}</th>
+            <th>${t('evtBudgetPct')}</th>
+            <th style="min-width:140px;"></th>
+            <th>${t('evtBudgetAmt')}</th>
+          </tr></thead>
+          <tbody>
+            ${(p.budgetBreakdown || []).map(b => `
+              <tr>
+                <td>${esc(b.item)}</td>
+                <td style="color:var(--cyan);font-weight:600;">${b.percentage}%</td>
+                <td><div class="budget-bar-wrap"><div class="budget-bar" style="width:${Math.min(b.percentage * 2.86, 100)}%"></div></div></td>
+                <td style="color:var(--text-m);">${esc(b.amount)}</td>
+              </tr>
+            `).join('')}
+          </tbody>
+        </table>
+      `;
+
+      const proposal = document.getElementById('evtProposal');
+      proposal.classList.add('active');
+      proposal.scrollIntoView({ behavior: 'smooth', block: 'start' });
+    }
+
+    function resetEventForm() {
+      ['evtHandle','evtLocation','evtAudience','evtGoals','evtBudget','evtNotes'].forEach(id => {
+        document.getElementById(id).value = '';
+      });
+      document.getElementById('evtType').value = '';
+      document.getElementById('evtScale').value = '';
+      document.getElementById('evtProposal').classList.remove('active');
+      currentProposal = null;
+      document.getElementById('evtHandle').focus();
+    }
+
+    function exportProposalPdf() {
+      window.print();
     }
 
     // ============================================================
