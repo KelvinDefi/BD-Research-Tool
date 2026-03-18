@@ -2099,9 +2099,10 @@
     }
 
     .check-chip.checked {
-      background: rgba(124,58,237,0.18);
-      border-color: var(--purple);
-      color: var(--purple-l);
+      background: var(--purple);
+      border-color: var(--cyan);
+      color: #fff;
+      box-shadow: 0 0 10px rgba(124,58,237,0.45);
     }
 
     /* Follower tier chips */
@@ -2128,9 +2129,10 @@
     }
 
     .tier-chip.selected {
-      background: rgba(6,182,212,0.15);
+      background: var(--purple);
       border-color: var(--cyan);
-      color: var(--cyan-l);
+      color: #fff;
+      box-shadow: 0 0 10px rgba(124,58,237,0.45);
     }
 
     /* Custom range inputs */
@@ -2490,6 +2492,34 @@
     .kol-name-cell { display: flex; flex-direction: column; gap: 2px; }
     .kol-name { font-weight: 600; color: var(--text); }
     .kol-handle { font-size: 11px; color: var(--cyan); }
+
+    .kol-name-link {
+      font-weight: 600;
+      color: var(--text);
+      text-decoration: none;
+      display: inline-flex;
+      align-items: center;
+      gap: 5px;
+      transition: color 0.18s;
+    }
+
+    .kol-name-link:hover { color: var(--cyan-l); text-decoration: underline; }
+    .kol-name-link .link-icon { font-size: 11px; opacity: 0.6; }
+    .kol-name-link:hover .link-icon { opacity: 1; }
+
+    .kol-disclaimer {
+      display: flex;
+      align-items: flex-start;
+      gap: 10px;
+      background: rgba(245,158,11,0.07);
+      border: 1px solid rgba(245,158,11,0.25);
+      border-radius: var(--radius-sm);
+      padding: 10px 16px;
+      margin-bottom: 18px;
+      font-size: 12px;
+      color: var(--yellow);
+      line-height: 1.5;
+    }
 
     .kol-platform-cell {
       display: flex;
@@ -3119,17 +3149,17 @@
             <div class="full-width">
               <label class="kol-label" data-i18n="kolCategoryLabel">Category / Thể loại</label>
               <div class="check-group" id="kolCategoryGroup">
-                <label class="check-chip" onclick="toggleChip(this)"><input type="checkbox" value="DeFi">DeFi</label>
-                <label class="check-chip" onclick="toggleChip(this)"><input type="checkbox" value="AI">AI</label>
-                <label class="check-chip" onclick="toggleChip(this)"><input type="checkbox" value="GameFi">GameFi</label>
-                <label class="check-chip" onclick="toggleChip(this)"><input type="checkbox" value="RWA">RWA</label>
-                <label class="check-chip" onclick="toggleChip(this)"><input type="checkbox" value="NFT">NFT</label>
-                <label class="check-chip" onclick="toggleChip(this)"><input type="checkbox" value="Layer1/L2">Layer1/L2</label>
-                <label class="check-chip" onclick="toggleChip(this)"><input type="checkbox" value="Meme">Meme</label>
-                <label class="check-chip" onclick="toggleChip(this)"><input type="checkbox" value="Trading">Trading</label>
-                <label class="check-chip" onclick="toggleChip(this)"><input type="checkbox" value="Web3 General">Web3 General</label>
-                <label class="check-chip" onclick="toggleChip(this)"><input type="checkbox" value="Metaverse">Metaverse</label>
-                <label class="check-chip" onclick="toggleChip(this)"><input type="checkbox" value="SocialFi">SocialFi</label>
+                <div class="check-chip" onclick="toggleChip(this)"><input type="checkbox" value="DeFi">DeFi</div>
+                <div class="check-chip" onclick="toggleChip(this)"><input type="checkbox" value="AI">AI</div>
+                <div class="check-chip" onclick="toggleChip(this)"><input type="checkbox" value="GameFi">GameFi</div>
+                <div class="check-chip" onclick="toggleChip(this)"><input type="checkbox" value="RWA">RWA</div>
+                <div class="check-chip" onclick="toggleChip(this)"><input type="checkbox" value="NFT">NFT</div>
+                <div class="check-chip" onclick="toggleChip(this)"><input type="checkbox" value="Layer1/L2">Layer1/L2</div>
+                <div class="check-chip" onclick="toggleChip(this)"><input type="checkbox" value="Meme">Meme</div>
+                <div class="check-chip" onclick="toggleChip(this)"><input type="checkbox" value="Trading">Trading</div>
+                <div class="check-chip" onclick="toggleChip(this)"><input type="checkbox" value="Web3 General">Web3 General</div>
+                <div class="check-chip" onclick="toggleChip(this)"><input type="checkbox" value="Metaverse">Metaverse</div>
+                <div class="check-chip" onclick="toggleChip(this)"><input type="checkbox" value="SocialFi">SocialFi</div>
               </div>
             </div>
 
@@ -3137,12 +3167,12 @@
             <div class="full-width">
               <label class="kol-label" data-i18n="kolPlatformLabel">Platform / Nền tảng</label>
               <div class="check-group" id="kolPlatformGroup">
-                <label class="check-chip" onclick="toggleChip(this)"><input type="checkbox" value="Twitter">𝕏 Twitter</label>
-                <label class="check-chip" onclick="toggleChip(this)"><input type="checkbox" value="YouTube">📺 YouTube</label>
-                <label class="check-chip" onclick="toggleChip(this)"><input type="checkbox" value="Telegram">💬 Telegram</label>
-                <label class="check-chip" onclick="toggleChip(this)"><input type="checkbox" value="Instagram">📸 Instagram</label>
-                <label class="check-chip" onclick="toggleChip(this)"><input type="checkbox" value="TikTok">🎵 TikTok</label>
-                <label class="check-chip" onclick="toggleChip(this)"><input type="checkbox" value="Discord">🎮 Discord</label>
+                <div class="check-chip" onclick="toggleChip(this)"><input type="checkbox" value="Twitter">𝕏 Twitter</div>
+                <div class="check-chip" onclick="toggleChip(this)"><input type="checkbox" value="YouTube">📺 YouTube</div>
+                <div class="check-chip" onclick="toggleChip(this)"><input type="checkbox" value="Telegram">💬 Telegram</div>
+                <div class="check-chip" onclick="toggleChip(this)"><input type="checkbox" value="Instagram">📸 Instagram</div>
+                <div class="check-chip" onclick="toggleChip(this)"><input type="checkbox" value="TikTok">🎵 TikTok</div>
+                <div class="check-chip" onclick="toggleChip(this)"><input type="checkbox" value="Discord">🎮 Discord</div>
               </div>
             </div>
 
@@ -3221,6 +3251,12 @@
 
       <!-- KOL RESULTS -->
       <div class="kol-results" id="kolResults">
+
+        <!-- Disclaimer -->
+        <div class="kol-disclaimer" id="kolDisclaimer" style="display:none;">
+          <span style="font-size:16px;flex-shrink:0;">⚠️</span>
+          <span>Results are AI-generated <strong>representative profiles</strong> for research reference only. Handles and stats are illustrative — verify all accounts and rates before outreach.</span>
+        </div>
 
         <!-- Stats bar -->
         <div class="kol-stats-bar" id="kolStatsBar"></div>
@@ -4974,6 +5010,11 @@ Guidelines:
 
       try {
         const list = await callClaudeForKols(f, apiKey);
+        // Normalise: strip any leading @ from handles, build profileUrl
+        list.forEach(k => {
+          k.handle = (k.handle || '').replace(/^@/, '');
+          k.profileUrl = getProfileUrl(k.platform, k.handle);
+        });
         kolData = list;
         kolSelected = [];
         renderKolResults(list, f);
@@ -5000,14 +5041,14 @@ Guidelines:
         f.desc              ? `Additional: ${f.desc}` : '',
       ].filter(Boolean).join('\n');
 
-      const prompt = `You are a Web3 KOL intelligence database with knowledge of crypto influencers worldwide. Generate a realistic KOL list based on these filters:
+      const prompt = `You are a Web3 KOL intelligence engine. Generate representative KOL profiles for research purposes based on the filters below.
 
 ${filterDesc}
 
-Generate exactly ${f.count} KOL profiles. Return ONLY a valid JSON array (no markdown, no explanation):
+Generate exactly ${f.count} representative KOL profiles. These are clearly labeled research reference profiles — not guaranteed real accounts. Return ONLY a valid JSON array (no markdown, no explanation):
 [{
-  "name": "KOL display name",
-  "handle": "@username",
+  "name": "Display Name",
+  "handle": "username_without_at",
   "platform": "Twitter|YouTube|Telegram|Instagram|TikTok|Discord",
   "followers": 125000,
   "followersDisplay": "125K",
@@ -5017,22 +5058,22 @@ Generate exactly ${f.count} KOL profiles. Return ONLY a valid JSON array (no mar
   "countryFlag": "🇻🇳",
   "engagement": "3.2%",
   "language": "Vietnamese/English",
-  "profileUrl": "https://twitter.com/username",
-  "bio": "1-line description of their content focus",
+  "bio": "1-line description of their content niche and style",
   "bookingTier": "Budget|Standard|Premium|Elite",
   "estimatedRate": "$200-500/post",
   "trustScore": 85
 }]
 
 Rules:
-- Generate realistic, plausible KOL profiles matching the filters
-- Mix verified and emerging influencers
-- Ensure geographic and platform diversity when not restricted by filters
-- trustScore 0-100: based on consistency, engagement quality, niche relevance, no rug promotion
+- handle must be plain username WITHOUT the @ symbol (e.g. "crypto_analyst_vn" not "@crypto_analyst_vn")
+- Generate plausible representative profiles matching the filters — these are examples, not verified real accounts
+- Mix different tiers and styles within each niche
+- Ensure geographic and platform diversity when filters allow
+- trustScore 0-100: based on engagement quality, consistency, niche authority, no rug-promo history
 - Tier: Nano=1K-10K, Micro=10K-100K, Macro=100K-1M, Mega=1M+
-- estimatedRate scales with follower count and engagement
-- If no platform filter, vary across platforms
-- Return ONLY the JSON array`;
+- estimatedRate scales with follower count and engagement rate
+- If no platform filter, spread across multiple platforms
+- Return ONLY the JSON array, no profileUrl field needed`;
 
       const resp = await fetch('https://api.anthropic.com/v1/messages', {
         method: 'POST',
@@ -5074,8 +5115,30 @@ Rules:
       Instagram:'📸', TikTok:'🎵', Discord:'🎮'
     };
 
+    const PLATFORM_URL_FN = {
+      Twitter:   h => `https://twitter.com/${h}`,
+      YouTube:   h => `https://youtube.com/@${h}`,
+      Telegram:  h => `https://t.me/${h}`,
+      Instagram: h => `https://instagram.com/${h}`,
+      TikTok:    h => `https://tiktok.com/@${h}`,
+      Discord:   h => `https://discord.com/users/${h}`,
+    };
+
+    function getProfileUrl(platform, handle) {
+      const clean = (handle || '').replace(/^@/, '');
+      const fn = PLATFORM_URL_FN[platform];
+      return fn ? fn(clean) : `https://twitter.com/${clean}`;
+    }
+
     function renderKolResults(list, filters) {
       renderKolStats(list);
+
+      // Disclaimer
+      const disclaimerEl = document.getElementById('kolDisclaimer');
+      if (disclaimerEl) {
+        disclaimerEl.style.display = 'flex';
+      }
+
       renderKolTable(list);
       renderKolSelectedPanel();
       document.getElementById('kolResults').classList.add('active');
@@ -5132,12 +5195,17 @@ Rules:
         const isAdded    = kolSelected.some(s => s.handle === k.handle);
         const icon       = PLATFORM_ICONS[k.platform] || '🌐';
 
-        return `<tr id="kol-row-${i}" data-name="${esc(k.name)}" data-handle="${esc(k.handle)}" data-platform="${esc(k.platform)}" data-country="${esc(k.country)}">
+        const profileUrl = getProfileUrl(k.platform, k.handle);
+        const cleanHandle = (k.handle || '').replace(/^@/, '');
+
+        return `<tr id="kol-row-${i}" data-name="${esc(k.name)}" data-handle="${esc(cleanHandle)}" data-platform="${esc(k.platform)}" data-country="${esc(k.country)}">
           <td class="kol-num">${i + 1}</td>
           <td>
             <div class="kol-name-cell">
-              <span class="kol-name">${esc(k.name)}</span>
-              <span class="kol-handle">${esc(k.handle)}</span>
+              <a class="kol-name-link" href="${esc(profileUrl)}" target="_blank" rel="noopener noreferrer">
+                ${esc(k.name)} <span class="link-icon">🔗</span>
+              </a>
+              <span class="kol-handle">@${esc(cleanHandle)}</span>
             </div>
           </td>
           <td>
