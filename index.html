@@ -1398,6 +1398,7 @@
 
     .toast.success { border-color: rgba(16,185,129,0.4); color: var(--green); }
     .toast.error   { border-color: rgba(239,68,68,0.4);  color: var(--red);   }
+    .toast.info    { border-color: rgba(6,182,212,0.4);  color: var(--cyan);  }
 
     @keyframes toast-in {
       from { opacity: 0; transform: translateX(20px); }
@@ -2350,7 +2351,38 @@
       margin-bottom: 8px;
     }
 
-    .kol-loading-sub { font-size: 13px; color: var(--text-m); }
+    .kol-loading-sub { font-size: 13px; color: var(--text-m); min-height: 20px; transition: all 0.3s; }
+
+    .kol-progress-bar-wrap {
+      width: 320px; max-width: 90vw;
+      height: 6px; background: rgba(255,255,255,0.08);
+      border-radius: 99px; overflow: hidden;
+      margin: 12px auto 10px;
+    }
+    .kol-progress-bar {
+      height: 100%; width: 0%;
+      background: linear-gradient(90deg, var(--purple), var(--cyan));
+      border-radius: 99px;
+      transition: width 0.4s ease;
+    }
+
+    .kol-suggestions {
+      display: flex; flex-wrap: wrap; gap: 6px; align-items: center;
+      margin-top: 8px;
+    }
+    .suggest-label { font-size: 11px; color: var(--text-dim); flex-shrink: 0; }
+    .suggest-chip {
+      font-size: 11px; padding: 3px 10px;
+      border: 1px solid rgba(255,255,255,0.12);
+      border-radius: 99px; color: var(--text-m);
+      cursor: pointer; background: rgba(255,255,255,0.04);
+      transition: all 0.15s;
+      user-select: none;
+    }
+    .suggest-chip:hover {
+      border-color: var(--cyan); color: var(--cyan);
+      background: rgba(6,182,212,0.08);
+    }
 
     /* ============================================================
        KOL FINDER — RESULTS
@@ -3181,6 +3213,17 @@
                 data-i18n-placeholder="kolKeywordsPlaceholder"
                 placeholder="e.g. DeFi analyst, crypto trader, NFT artist..."
                 autocomplete="off">
+              <div class="kol-suggestions" id="kolSuggestions">
+                <span class="suggest-label" data-i18n="kolSuggestTry">Try:</span>
+                <span class="suggest-chip" onclick="useSuggestion('crypto trader')">crypto trader</span>
+                <span class="suggest-chip" onclick="useSuggestion('NFT artist')">NFT artist</span>
+                <span class="suggest-chip" onclick="useSuggestion('DeFi analyst')">DeFi analyst</span>
+                <span class="suggest-chip" onclick="useSuggestion('game review')">game review</span>
+                <span class="suggest-chip" onclick="useSuggestion('esport')">esport</span>
+                <span class="suggest-chip" onclick="useSuggestion('betting review')">betting review</span>
+                <span class="suggest-chip" onclick="useSuggestion('crypto news')">crypto news</span>
+                <span class="suggest-chip" onclick="useSuggestion('web3 tutorial')">web3 tutorial</span>
+              </div>
             </div>
 
             <!-- Category -->
@@ -3284,7 +3327,10 @@
           <div class="kol-scan-dot"></div>
         </div>
         <div class="kol-loading-text" data-i18n="kolLoadingText">Scanning KOL Database...</div>
-        <div class="kol-loading-sub" data-i18n="kolLoadingSub">Fetching real YouTube channel data...</div>
+        <div class="kol-progress-bar-wrap">
+          <div class="kol-progress-bar" id="kolProgressBar" style="width:0%"></div>
+        </div>
+        <div class="kol-loading-sub" id="kolProgressMsg">🔍 Initializing search...</div>
       </div>
 
       <!-- KOL RESULTS -->
@@ -3573,6 +3619,13 @@
         kolNoSaved:             'No saved search found',
         kolExportEmpty:         'Add KOLs to the list before exporting',
         kolRemove:              'Remove',
+        kolSuggestTry:          'Try:',
+        kolProgressSearching:   'Searching',
+        kolProgressFetching:    'Fetching channel details...',
+        kolProgressFiltering:   'Filtering results...',
+        kolProgressDone:        'Done!',
+        kolExpandedRange:       'Expanded search range for more results',
+        kolYtInvalidKey:        'Invalid YouTube API Key. Please check and try again.',
       },
       vi: {
         logoSubtitle:      'Nền Tảng Nghiên Cứu BD Web3',
@@ -3772,6 +3825,13 @@
         kolNoSaved:             'Không tìm thấy tìm kiếm đã lưu',
         kolExportEmpty:         'Thêm KOL vào danh sách trước khi xuất',
         kolRemove:              'Xóa',
+        kolSuggestTry:          'Thử:',
+        kolProgressSearching:   'Đang tìm kiếm',
+        kolProgressFetching:    'Đang tải thông tin kênh...',
+        kolProgressFiltering:   'Đang lọc kết quả...',
+        kolProgressDone:        'Xong!',
+        kolExpandedRange:       'Mở rộng phạm vi tìm kiếm để có thêm kết quả',
+        kolYtInvalidKey:        'YouTube API Key không hợp lệ. Vui lòng kiểm tra lại.',
       }
     };
 
@@ -4551,7 +4611,9 @@ Return a comprehensive JSON analysis. For bdRecommendations, provide 4-6 service
         <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" style="width:15px;height:15px;flex-shrink:0;">
           ${type === 'success'
             ? '<path d="M22 11.08V12a10 10 0 1 1-5.93-9.14"/><polyline points="22 4 12 14.01 9 11.01"/>'
-            : '<circle cx="12" cy="12" r="10"/><line x1="12" y1="8" x2="12" y2="12"/><line x1="12" y1="16" x2="12.01" y2="16"/>'}
+            : type === 'info'
+              ? '<circle cx="12" cy="12" r="10"/><line x1="12" y1="16" x2="12" y2="12"/><line x1="12" y1="8" x2="12.01" y2="8"/>'
+              : '<circle cx="12" cy="12" r="10"/><line x1="12" y1="8" x2="12" y2="12"/><line x1="12" y1="16" x2="12.01" y2="16"/>'}
         </svg>
         ${esc(msg)}`;
       container.appendChild(toast);
@@ -5130,6 +5192,30 @@ Guidelines:
     }
 
     // ============================================================
+    // KOL FINDER — PROGRESS HELPERS
+    // ============================================================
+    function setProgress(pct, msg) {
+      const bar = document.getElementById('kolProgressBar');
+      const txt = document.getElementById('kolProgressMsg');
+      if (bar) bar.style.width = pct + '%';
+      if (txt) txt.textContent = msg;
+    }
+
+    function useSuggestion(term) {
+      const inp = document.getElementById('kolKeywords');
+      if (!inp) return;
+      const cur = inp.value.trim();
+      if (!cur) {
+        inp.value = term;
+      } else {
+        // append comma-separated if not already present
+        const parts = cur.split(',').map(s => s.trim());
+        if (!parts.includes(term)) inp.value = cur + ', ' + term;
+      }
+      inp.focus();
+    }
+
+    // ============================================================
     // KOL FINDER — FIND KOLS (MAIN)
     // ============================================================
     async function findKols() {
@@ -5151,6 +5237,7 @@ Guidelines:
       btn.innerHTML = `<span>${t('kolLoadingText')}</span>`;
       document.getElementById('kolLoading').classList.add('active');
       document.getElementById('kolResults').classList.remove('active');
+      setProgress(0, '🔍 ' + t('kolProgressSearching') + '...');
 
       try {
         const list = await searchYouTubeChannels(f, ytKey);
@@ -5161,120 +5248,245 @@ Guidelines:
         showToast(err.message || t('errorDefault'), 'error');
       } finally {
         document.getElementById('kolLoading').classList.remove('active');
+        setProgress(0, '');
         btn.disabled = false;
         btn.innerHTML = `<span data-i18n="kolFindBtn">${t('kolFindBtn')}</span>`;
       }
     }
 
     // ============================================================
-    // KOL FINDER — YOUTUBE DATA API v3
+    // KOL FINDER — COUNTRY DETECTION HELPERS
     // ============================================================
+    const COUNTRY_LANG_MAP = { VN:'vi', JP:'ja', KR:'ko', CN:'zh', TW:'zh', DE:'de', BR:'pt', FR:'fr', RU:'ru', TH:'th', IN:'hi', ID:'id', PH:'tl', ES:'es', TR:'tr' };
+
+    const COUNTRY_DESC_KEYWORDS = {
+      VN: ['việt', 'viet', 'vietnam', 'hcm', 'hanoi', 'hà nội', 'saigon', 'sài gòn', 'tp.hcm'],
+      JP: ['japan', 'japanese', '日本', 'tokyo', 'osaka'],
+      KR: ['korea', 'korean', '한국', 'seoul', '서울'],
+      CN: ['china', 'chinese', '中国', '中文', 'beijing', 'shanghai'],
+      TH: ['thailand', 'thai', 'ไทย', 'bangkok'],
+      ID: ['indonesia', 'indonesian', 'jakarta', 'bahasa'],
+      PH: ['philippines', 'filipino', 'pilipinas', 'manila'],
+      SG: ['singapore', 'sgd', 'sg'],
+      IN: ['india', 'indian', 'hindi', 'bharat', 'mumbai', 'delhi'],
+      TR: ['turkey', 'turkish', 'türkiye', 'ankara'],
+      BR: ['brazil', 'brazilian', 'brasil', 'português', 'são paulo'],
+      RU: ['russia', 'russian', 'россия', 'москва'],
+      DE: ['germany', 'german', 'deutschland', 'berlin'],
+      FR: ['france', 'french', 'français', 'paris'],
+      ES: ['spain', 'spanish', 'españa', 'espanol'],
+      UA: ['ukraine', 'ukrainian', 'україна'],
+      NG: ['nigeria', 'nigerian', 'lagos', 'naira'],
+      GB: ['united kingdom', 'uk', 'britain', 'british', 'london'],
+      US: ['united states', 'usa', 'american', 'new york', 'los angeles'],
+      AU: ['australia', 'australian', 'sydney', 'melbourne'],
+    };
+
+    function detectCountryFromChannel(sn) {
+      // 1. Explicit country field
+      if (sn.country) return sn.country.toUpperCase();
+
+      // 2. defaultLanguage hint
+      if (sn.defaultLanguage) {
+        const dl = sn.defaultLanguage.toLowerCase().split('-')[0];
+        for (const [code, lang] of Object.entries(COUNTRY_LANG_MAP)) {
+          if (dl === lang) return code;
+        }
+      }
+
+      // 3. Scan description + title for keywords
+      const haystack = ((sn.description || '') + ' ' + (sn.title || '')).toLowerCase();
+      for (const [code, keywords] of Object.entries(COUNTRY_DESC_KEYWORDS)) {
+        if (keywords.some(kw => haystack.includes(kw))) return code;
+      }
+
+      return '';
+    }
+
+    // ============================================================
+    // KOL FINDER — YOUTUBE DATA API v3 (OPTIMIZED)
+    // ============================================================
+    async function ytSearchOne(query, rlang, ytKey, maxR) {
+      const url = new URL('https://www.googleapis.com/youtube/v3/search');
+      url.searchParams.set('part', 'snippet');
+      url.searchParams.set('q', query);
+      url.searchParams.set('type', 'channel');
+      url.searchParams.set('maxResults', String(maxR));
+      url.searchParams.set('relevanceLanguage', rlang);
+      url.searchParams.set('key', ytKey);
+      const resp = await fetch(url.toString());
+      if (!resp.ok) {
+        const err = await resp.json().catch(() => ({}));
+        if (resp.status === 403) throw new Error(t('kolYtQuota'));
+        if (resp.status === 400) throw new Error(t('kolYtInvalidKey'));
+        throw new Error(err.error?.message || `YouTube API error ${resp.status}`);
+      }
+      return (await resp.json()).items || [];
+    }
+
     async function searchYouTubeChannels(f, ytKey) {
-      // Build search query: keywords + categories
-      const queryParts = [f.keywords, ...f.categories].filter(Boolean);
-      const query = queryParts.join(' ') || 'crypto web3';
+      // --- Build query list (CHANGE 1 + 2) ---
+      const kwTerms = f.keywords
+        ? f.keywords.split(',').map(s => s.trim()).filter(Boolean)
+        : [];
+      const catStr  = f.categories.join(' ');
+      const firstCountry = f.countries.length ? (COUNTRY_NAME_TO_CODE[f.countries[0]] || '') : '';
+      const rlang = COUNTRY_LANG_MAP[firstCountry] || 'en';
+      const countryName = firstCountry ? (COUNTRY_CODE_MAP[firstCountry]?.name || '') : '';
 
-      // Relevance language from first selected country
-      const langMap = { VN:'vi', JP:'ja', KR:'ko', CN:'zh-Hans', DE:'de', BR:'pt', FR:'fr', RU:'ru' };
-      const firstCode = f.countries.length ? (COUNTRY_NAME_TO_CODE[f.countries[0]] || '') : '';
-      const rlang = langMap[firstCode] || 'en';
+      // Build up to 5 distinct queries
+      const queries = new Set();
 
-      const maxR = Math.min(50, f.count || 20);
-
-      // Step 1 — Search for channels
-      const searchUrl = new URL('https://www.googleapis.com/youtube/v3/search');
-      searchUrl.searchParams.set('part', 'snippet');
-      searchUrl.searchParams.set('q', query);
-      searchUrl.searchParams.set('type', 'channel');
-      searchUrl.searchParams.set('maxResults', String(maxR));
-      searchUrl.searchParams.set('relevanceLanguage', rlang);
-      searchUrl.searchParams.set('key', ytKey);
-
-      const searchResp = await fetch(searchUrl.toString());
-      if (!searchResp.ok) {
-        const err = await searchResp.json().catch(() => ({}));
-        if (searchResp.status === 403) throw new Error(t('kolYtQuota'));
-        if (searchResp.status === 400) throw new Error('Invalid YouTube API Key. Please check and try again.');
-        throw new Error(err.error?.message || `YouTube API error ${searchResp.status}`);
+      // Primary: each keyword alone + language hint
+      for (const kw of kwTerms) {
+        if (queries.size >= 3) break;
+        queries.add(kw + (countryName ? ' ' + countryName : ''));
+      }
+      // Secondary: categories + country
+      if (catStr) {
+        queries.add(catStr + (countryName ? ' ' + countryName : '') + ' channel');
+      }
+      // Tertiary: all keywords together
+      if (kwTerms.length > 1) {
+        queries.add(kwTerms.slice(0, 3).join(' '));
+      }
+      // Fallback
+      if (!queries.size) {
+        queries.add((catStr || 'crypto web3') + ' channel');
       }
 
-      const searchData = await searchResp.json();
-      const items = searchData.items || [];
-      if (!items.length) throw new Error(t('kolYtNoResults'));
+      const queryList = [...queries].slice(0, 5);
 
-      const channelIds = items.map(i => i.id.channelId).filter(Boolean).join(',');
+      // --- Run all queries in parallel (CHANGE 1) ---
+      let done = 0;
+      const total = queryList.length;
+      setProgress(5, `🔍 ${t('kolProgressSearching')}: ${queryList[0]}...`);
 
-      // Step 2 — Get full channel details (batch)
-      const chUrl = new URL('https://www.googleapis.com/youtube/v3/channels');
-      chUrl.searchParams.set('part', 'snippet,statistics,brandingSettings');
-      chUrl.searchParams.set('id', channelIds);
-      chUrl.searchParams.set('key', ytKey);
+      const rawResults = await Promise.all(queryList.map(async (q, i) => {
+        try {
+          const items = await ytSearchOne(q, rlang, ytKey, 20);
+          done++;
+          setProgress(5 + Math.round((done / total) * 45), `🔍 ${t('kolProgressSearching')}: ${q}...`);
+          return items;
+        } catch (e) {
+          // If quota or auth error, re-throw. Network errors are ignored per query.
+          if (e.message.includes('quota') || e.message.includes('Key') || e.message.includes('Invalid')) throw e;
+          return [];
+        }
+      }));
 
-      const chResp = await fetch(chUrl.toString());
-      if (!chResp.ok) {
-        const err = await chResp.json().catch(() => ({}));
-        throw new Error(err.error?.message || `YouTube API error ${chResp.status}`);
+      // Deduplicate by channelId
+      const seenIds = new Set();
+      const allItems = rawResults.flat().filter(item => {
+        const id = item.id?.channelId;
+        if (!id || seenIds.has(id)) return false;
+        seenIds.add(id);
+        return true;
+      });
+
+      if (!allItems.length) throw new Error(t('kolYtNoResults'));
+
+      // --- Batch fetch channel details ---
+      setProgress(55, `📡 ${t('kolProgressFetching')}`);
+      // YouTube channels API accepts max 50 ids per call
+      const allChannels = [];
+      const batchSize = 50;
+      const allIds = allItems.map(i => i.id.channelId).filter(Boolean);
+      for (let i = 0; i < allIds.length; i += batchSize) {
+        const chunk = allIds.slice(i, i + batchSize);
+        const chUrl = new URL('https://www.googleapis.com/youtube/v3/channels');
+        chUrl.searchParams.set('part', 'snippet,statistics,brandingSettings');
+        chUrl.searchParams.set('id', chunk.join(','));
+        chUrl.searchParams.set('key', ytKey);
+        const chResp = await fetch(chUrl.toString());
+        if (!chResp.ok) {
+          const err = await chResp.json().catch(() => ({}));
+          throw new Error(err.error?.message || `YouTube API error ${chResp.status}`);
+        }
+        const chData = await chResp.json();
+        allChannels.push(...(chData.items || []));
+        setProgress(55 + Math.round(((i + batchSize) / allIds.length) * 25), `📡 ${t('kolProgressFetching')}`);
       }
 
-      const chData = await chResp.json();
-      const channels = chData.items || [];
-
-      // Step 3 — Map to KOL format
-      let kols = channels.map(ch => {
+      // --- Map to KOL format (CHANGE 3: better country detection) ---
+      setProgress(85, `📊 ${t('kolProgressFiltering')}`);
+      let kols = allChannels.map(ch => {
         const sn  = ch.snippet    || {};
         const st  = ch.statistics || {};
         const subs   = parseInt(st.subscriberCount) || 0;
         const views  = parseInt(st.viewCount)       || 0;
         const videos = parseInt(st.videoCount)      || 0;
 
-        const tier       = getYtTier(subs);
-        const countryCode = sn.country || '';
-        const { name: countryName, flag: countryFlag } = getCountryFromCode(countryCode);
+        const tier        = getYtTier(subs);
+        const countryCode = detectCountryFromChannel(sn); // CHANGE 3
+        const { name: countryName2, flag: countryFlag } = getCountryFromCode(countryCode);
 
-        // Build profile URL
-        const customUrl = sn.customUrl || '';
+        const customUrl  = sn.customUrl || '';
         const profileUrl = customUrl
           ? `https://youtube.com/${customUrl}`
           : `https://youtube.com/channel/${ch.id}`;
 
-        const handle = customUrl || ch.id;
-
         return {
-          channelId:          ch.id,
-          name:               sn.title || ch.id,
-          handle,
-          platform:           'YouTube',
-          followers:          subs,
-          followersDisplay:   fmtSubs(subs),
+          channelId:         ch.id,
+          name:              sn.title || ch.id,
+          handle:            customUrl || ch.id,
+          platform:          'YouTube',
+          followers:         subs,
+          followersDisplay:  fmtSubs(subs),
           tier,
-          category:           f.categories.length ? f.categories : ['Web3'],
-          country:            countryName || countryCode || 'Unknown',
+          category:          f.categories.length ? f.categories : ['Web3'],
+          country:           countryName2 || countryCode || 'Unknown',
           countryCode,
           countryFlag,
-          engagement:         '—',
-          estimatedRate:      estimateYtRate(subs),
-          trustScore:         estimateYtTrust(subs, videos, views),
-          bio:                (sn.description || '').slice(0, 120).replace(/\r?\n/g, ' '),
-          thumbnail:          sn.thumbnails?.medium?.url || sn.thumbnails?.default?.url || '',
+          engagement:        '—',
+          estimatedRate:     estimateYtRate(subs),
+          trustScore:        estimateYtTrust(subs, videos, views),
+          bio:               (sn.description || '').slice(0, 120).replace(/\r?\n/g, ' '),
+          thumbnail:         sn.thumbnails?.medium?.url || sn.thumbnails?.default?.url || '',
           profileUrl,
-          totalViews:         views,
-          totalViewsDisplay:  fmtSubs(views),
-          videoCount:         videos,
+          totalViews:        views,
+          totalViewsDisplay: fmtSubs(views),
+          videoCount:        videos,
         };
-      }).filter(k => k.followers > 0); // exclude hidden/zero sub channels
+      }).filter(k => k.followers > 0);
 
-      // Step 4 — Client-side filters
+      // --- Client-side filters (CHANGE 4: relaxed tier filter) ---
       const minF = f.minF ? parseInt(f.minF) : null;
       const maxF = f.maxF ? parseInt(f.maxF) : null;
-      if (f.tiers.length)       kols = kols.filter(k => f.tiers.includes(k.tier));
-      if (minF !== null)        kols = kols.filter(k => k.followers >= minF);
-      if (maxF !== null)        kols = kols.filter(k => k.followers <= maxF);
+
+      // Tier filter with ±50% relaxation
+      if (f.tiers.length) {
+        const tierFiltered = kols.filter(k => f.tiers.includes(k.tier));
+        if (tierFiltered.length >= 5) {
+          kols = tierFiltered;
+        } else {
+          // Expand by ±50% subscriber range
+          const tierBounds = { Nano:[1000,9999], Micro:[10000,99999], Macro:[100000,999999], Mega:[1000000,Infinity] };
+          let minSubs = Infinity, maxSubs = 0;
+          for (const tier of f.tiers) {
+            const [lo, hi] = tierBounds[tier] || [0, Infinity];
+            minSubs = Math.min(minSubs, lo * 0.5);
+            maxSubs = Math.max(maxSubs, hi === Infinity ? Infinity : hi * 1.5);
+          }
+          const expanded = kols.filter(k => k.followers >= minSubs && (maxSubs === Infinity || k.followers <= maxSubs));
+          kols = expanded.length > tierFiltered.length ? expanded : kols;
+          if (expanded.length > tierFiltered.length) {
+            showToast(t('kolExpandedRange'), 'info');
+          }
+        }
+      }
+
+      if (minF !== null) kols = kols.filter(k => k.followers >= minF);
+      if (maxF !== null) kols = kols.filter(k => k.followers <= maxF);
+
+      // Country soft filter
       if (f.countries.length) {
         const codes = f.countries.map(n => COUNTRY_NAME_TO_CODE[n]).filter(Boolean);
         const matched = kols.filter(k => codes.includes(k.countryCode));
-        if (matched.length > 0) kols = matched; // soft filter
+        if (matched.length > 0) kols = matched;
       }
 
+      setProgress(100, `✅ ${t('kolProgressDone')}`);
       if (!kols.length) throw new Error(t('kolYtNoResults'));
       return kols;
     }
