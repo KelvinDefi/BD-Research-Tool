@@ -2493,6 +2493,22 @@
     .kol-name { font-weight: 600; color: var(--text); }
     .kol-handle { font-size: 11px; color: var(--cyan); }
 
+    .kol-avatar {
+      width: 32px;
+      height: 32px;
+      border-radius: 50%;
+      object-fit: cover;
+      flex-shrink: 0;
+      border: 1.5px solid var(--border);
+      background: var(--bg2);
+    }
+
+    .kol-channel-cell {
+      display: flex;
+      align-items: center;
+      gap: 10px;
+    }
+
     .kol-name-link {
       font-weight: 600;
       color: var(--text);
@@ -3131,10 +3147,32 @@
           <span data-i18n="kolTitle1">Find The Right</span><br>
           <span class="title-gradient" data-i18n="kolTitle2">Web3 KOLs</span>
         </h2>
-        <p class="kol-subtitle" data-i18n="kolSubtitle">Filter by category, platform, tier, country and let AI generate a targeted KOL list with booking rates, trust scores and export to Excel.</p>
+        <p class="kol-subtitle" data-i18n="kolSubtitle">Search YouTube for real crypto &amp; Web3 channels — get live subscriber counts, total views, video stats and export to Excel.</p>
 
         <div class="kol-form-card">
           <div class="kol-form-grid">
+
+            <!-- YouTube API Key -->
+            <div class="full-width">
+              <label class="kol-label" data-i18n="kolYtKeyLabel">YouTube API Key</label>
+              <div style="display:flex;gap:8px;align-items:center;flex-wrap:wrap;">
+                <input type="password" class="form-input" id="kolYtApiKey"
+                  data-i18n-placeholder="kolYtKeyPlaceholder"
+                  placeholder="AIzaSy..."
+                  autocomplete="off"
+                  style="flex:1;min-width:200px;">
+                <button class="btn-ghost" onclick="saveYtApiKey()" data-i18n="kolYtKeySave">Save</button>
+                <div class="api-status inactive" id="ytApiStatus">
+                  <span class="dot"></span>
+                  <span id="ytApiStatusText" data-i18n="apiNoKey">No Key</span>
+                </div>
+              </div>
+              <p style="font-size:11px;color:var(--text-dim);margin-top:6px;display:flex;align-items:center;gap:4px;">
+                💡 <span data-i18n="kolYtKeyHint">Get a free key at</span>
+                <a href="https://console.cloud.google.com" target="_blank" rel="noopener" style="color:var(--cyan);">console.cloud.google.com</a>
+                <span style="color:var(--text-dim);" data-i18n="kolYtKeyHint2">— enable YouTube Data API v3</span>
+              </p>
+            </div>
 
             <!-- Keywords -->
             <div class="full-width">
@@ -3246,16 +3284,16 @@
           <div class="kol-scan-dot"></div>
         </div>
         <div class="kol-loading-text" data-i18n="kolLoadingText">Scanning KOL Database...</div>
-        <div class="kol-loading-sub" data-i18n="kolLoadingSub">AI is searching thousands of influencer profiles</div>
+        <div class="kol-loading-sub" data-i18n="kolLoadingSub">Fetching real YouTube channel data...</div>
       </div>
 
       <!-- KOL RESULTS -->
       <div class="kol-results" id="kolResults">
 
         <!-- Disclaimer -->
-        <div class="kol-disclaimer" id="kolDisclaimer" style="display:none;">
-          <span style="font-size:16px;flex-shrink:0;">⚠️</span>
-          <span>Results are AI-generated <strong>representative profiles</strong> for research reference only. Handles and stats are illustrative — verify all accounts and rates before outreach.</span>
+        <div class="kol-disclaimer" id="kolDisclaimer" style="display:none;background:rgba(16,185,129,0.06);border-color:rgba(16,185,129,0.22);color:var(--green);">
+          <span style="font-size:16px;flex-shrink:0;">✅</span>
+          <span>Real YouTube channel data via YouTube Data API v3. Subscriber counts and view stats are live. <strong>Est. rates are approximate</strong> — negotiate directly with creators.</span>
         </div>
 
         <!-- Stats bar -->
@@ -3268,9 +3306,9 @@
             placeholder="Filter results..."
             oninput="filterKolTable(this.value)">
           <select class="kol-sort-select" id="kolSortSelect" onchange="sortKolTable(this.value)">
-            <option value="followers" data-i18n="kolSortFollowers">Sort: Followers</option>
-            <option value="engagement" data-i18n="kolSortEngagement">Sort: Engagement</option>
-            <option value="trust" data-i18n="kolSortTrust">Sort: Trust Score</option>
+            <option value="followers" data-i18n="kolSortFollowers">Sort: Subscribers</option>
+            <option value="views" data-i18n="kolSortViews">Sort: Total Views</option>
+            <option value="videos" data-i18n="kolSortVideos">Sort: Videos</option>
           </select>
         </div>
 
@@ -3280,14 +3318,13 @@
             <thead>
               <tr>
                 <th style="width:36px;">#</th>
-                <th data-i18n="kolColName">Name</th>
-                <th data-i18n="kolColPlatform">Platform</th>
-                <th class="sorted" onclick="sortKolTable('followers')" data-i18n="kolColFollowers">Followers <span class="sort-arrow">↓</span></th>
-                <th data-i18n="kolColTier">Tier</th>
+                <th data-i18n="kolColName">Channel</th>
+                <th class="sorted" onclick="sortKolTable('followers')" data-i18n="kolColFollowers">Subscribers <span class="sort-arrow">↓</span></th>
+                <th onclick="sortKolTable('views')" data-i18n="kolColViews">Total Views <span class="sort-arrow">↕</span></th>
+                <th onclick="sortKolTable('videos')" data-i18n="kolColVideos">Videos <span class="sort-arrow">↕</span></th>
                 <th data-i18n="kolColCountry">Country</th>
-                <th onclick="sortKolTable('engagement')" data-i18n="kolColEngagement">Engagement <span class="sort-arrow">↕</span></th>
+                <th data-i18n="kolColTier">Tier</th>
                 <th data-i18n="kolColRate">Est. Rate</th>
-                <th onclick="sortKolTable('trust')" data-i18n="kolColTrust">Trust <span class="sort-arrow">↕</span></th>
                 <th data-i18n="kolColAction">Action</th>
               </tr>
             </thead>
@@ -3483,7 +3520,7 @@
         kolEyebrow:             'KOL Intelligence Engine',
         kolTitle1:              'Find The Right',
         kolTitle2:              'Web3 KOLs',
-        kolSubtitle:            'Filter by category, platform, tier, country and let AI generate a targeted KOL list with booking rates, trust scores and export to Excel.',
+        kolSubtitle:            'Search YouTube for real crypto & Web3 channels — get live subscriber counts, total views, video stats and export to Excel.',
         kolKeywordsLabel:       'Keywords',
         kolKeywordsPlaceholder: 'e.g. DeFi analyst, crypto trader, NFT artist...',
         kolCategoryLabel:       'Category',
@@ -3500,31 +3537,37 @@
         kolSaveSearch:          '💾 Save Search',
         kolLoadSearch:          '📋 Load Previous',
         kolLoadingText:         'Scanning KOL Database...',
-        kolLoadingSub:          'AI is searching thousands of influencer profiles',
+        kolLoadingSub:          'Fetching real YouTube channel data...',
         kolFilterPlaceholder:   'Filter results...',
-        kolSortFollowers:       'Sort: Followers',
-        kolSortEngagement:      'Sort: Engagement',
-        kolSortTrust:           'Sort: Trust Score',
-        kolColName:             'Name',
-        kolColPlatform:         'Platform',
-        kolColFollowers:        'Followers',
+        kolSortFollowers:       'Sort: Subscribers',
+        kolSortViews:           'Sort: Total Views',
+        kolSortVideos:          'Sort: Videos',
+        kolColName:             'Channel',
+        kolColFollowers:        'Subscribers',
+        kolColViews:            'Total Views',
+        kolColVideos:           'Videos',
         kolColTier:             'Tier',
         kolColCountry:          'Country',
-        kolColEngagement:       'Engagement',
         kolColRate:             'Est. Rate',
-        kolColTrust:            'Trust',
         kolColAction:           'Action',
         kolAddToList:           '➕ Add to List',
         kolAdded:               '✓ Added',
         kolSelectedTitle:       'Selected KOLs',
         kolSelectedEmpty:       'No KOLs selected yet. Click "➕ Add to List" on any row.',
         kolExportExcel:         '📊 EXPORT TO EXCEL',
-        kolStatTotal:           'KOLs Found',
-        kolStatPlatforms:       'Platforms',
+        kolStatTotal:           'Channels Found',
+        kolStatTotalSubs:       'Total Subscribers',
         kolStatTiers:           'Tiers',
-        kolStatAvgEng:          'Avg Engagement',
-        kolNeedKey:             'Please enter your Claude API key first',
-        kolNeedFilter:          'Please select at least one category or platform',
+        kolStatAvgViews:        'Avg Views/Channel',
+        kolYtKeyLabel:          'YouTube API Key',
+        kolYtKeyPlaceholder:    'AIzaSy...',
+        kolYtKeySave:           'Save Key',
+        kolYtKeyHint:           'Get a free key at',
+        kolYtKeyHint2:          '— enable YouTube Data API v3',
+        kolYtNoKey:             'Please enter your YouTube API Key first',
+        kolYtQuota:             'YouTube API quota exceeded. Resets at midnight Pacific Time.',
+        kolYtNoResults:         'No channels found. Try different keywords or categories.',
+        kolNeedFilter:          'Please enter keywords or select at least one category',
         kolSearchSaved:         'Search filters saved',
         kolSearchLoaded:        'Previous search loaded',
         kolNoSaved:             'No saved search found',
@@ -3676,7 +3719,7 @@
         kolEyebrow:             'Công Cụ Tìm KOL',
         kolTitle1:              'Tìm Đúng',
         kolTitle2:              'KOL Web3',
-        kolSubtitle:            'Lọc theo thể loại, nền tảng, tier, quốc gia và để AI tạo danh sách KOL mục tiêu với giá booking, điểm tin cậy và xuất Excel.',
+        kolSubtitle:            'Tìm kiếm kênh YouTube thật về crypto & Web3 — số subscriber, lượt xem, video thực tế và xuất Excel.',
         kolKeywordsLabel:       'Từ Khóa',
         kolKeywordsPlaceholder: 'VD: DeFi analyst, crypto trader, NFT artist...',
         kolCategoryLabel:       'Thể Loại',
@@ -3693,31 +3736,37 @@
         kolSaveSearch:          '💾 Lưu Tìm Kiếm',
         kolLoadSearch:          '📋 Tải Lần Trước',
         kolLoadingText:         'Đang Quét Cơ Sở Dữ Liệu KOL...',
-        kolLoadingSub:          'AI đang tìm kiếm hàng nghìn hồ sơ influencer',
+        kolLoadingSub:          'Đang tải dữ liệu kênh YouTube thực...',
         kolFilterPlaceholder:   'Lọc kết quả...',
-        kolSortFollowers:       'Sắp xếp: Follower',
-        kolSortEngagement:      'Sắp xếp: Engagement',
-        kolSortTrust:           'Sắp xếp: Điểm Tin Cậy',
-        kolColName:             'Tên',
-        kolColPlatform:         'Nền Tảng',
-        kolColFollowers:        'Follower',
+        kolSortFollowers:       'Sắp xếp: Subscribers',
+        kolSortViews:           'Sắp xếp: Lượt Xem',
+        kolSortVideos:          'Sắp xếp: Video',
+        kolColName:             'Kênh',
+        kolColFollowers:        'Subscribers',
+        kolColViews:            'Tổng Lượt Xem',
+        kolColVideos:           'Videos',
         kolColTier:             'Tier',
         kolColCountry:          'Quốc Gia',
-        kolColEngagement:       'Engagement',
         kolColRate:             'Giá Dự Kiến',
-        kolColTrust:            'Tin Cậy',
         kolColAction:           'Thao Tác',
         kolAddToList:           '➕ Thêm Vào DS',
         kolAdded:               '✓ Đã Thêm',
         kolSelectedTitle:       'KOL Đã Chọn',
         kolSelectedEmpty:       'Chưa chọn KOL nào. Nhấn "➕ Thêm Vào DS" ở từng hàng.',
         kolExportExcel:         '📊 XUẤT EXCEL',
-        kolStatTotal:           'KOL Tìm Được',
-        kolStatPlatforms:       'Nền Tảng',
+        kolStatTotal:           'Kênh Tìm Được',
+        kolStatTotalSubs:       'Tổng Subscribers',
         kolStatTiers:           'Tiers',
-        kolStatAvgEng:          'Avg Engagement',
-        kolNeedKey:             'Vui lòng nhập Claude API key trước',
-        kolNeedFilter:          'Vui lòng chọn ít nhất một thể loại hoặc nền tảng',
+        kolStatAvgViews:        'Avg Lượt Xem/Kênh',
+        kolYtKeyLabel:          'YouTube API Key',
+        kolYtKeyPlaceholder:    'AIzaSy...',
+        kolYtKeySave:           'Lưu Key',
+        kolYtKeyHint:           'Lấy key miễn phí tại',
+        kolYtKeyHint2:          '— bật YouTube Data API v3',
+        kolYtNoKey:             'Vui lòng nhập YouTube API Key trước',
+        kolYtQuota:             'Đã hết quota YouTube API. Đặt lại lúc nửa đêm giờ Thái Bình Dương.',
+        kolYtNoResults:         'Không tìm thấy kênh. Thử từ khóa hoặc thể loại khác.',
+        kolNeedFilter:          'Vui lòng nhập từ khóa hoặc chọn ít nhất một thể loại',
         kolSearchSaved:         'Đã lưu bộ lọc tìm kiếm',
         kolSearchLoaded:        'Đã tải bộ lọc lần trước',
         kolNoSaved:             'Không tìm thấy tìm kiếm đã lưu',
@@ -4990,14 +5039,109 @@ Guidelines:
     }
 
     // ============================================================
+    // KOL FINDER — YOUTUBE API KEY MANAGEMENT
+    // ============================================================
+    function loadYtApiKey() {
+      const key = localStorage.getItem('yt_api_key') || '';
+      const input = document.getElementById('kolYtApiKey');
+      if (!input) return;
+      if (key) { input.value = key; setYtApiStatus(true); }
+    }
+
+    function saveYtApiKey() {
+      const key = document.getElementById('kolYtApiKey').value.trim();
+      if (!key) { showToast(t('kolYtNoKey'), 'error'); return; }
+      localStorage.setItem('yt_api_key', key);
+      setYtApiStatus(true);
+      showToast(t('kolSearchSaved'), 'success');
+    }
+
+    function getYtApiKey() {
+      return document.getElementById('kolYtApiKey')?.value.trim()
+          || localStorage.getItem('yt_api_key') || '';
+    }
+
+    function setYtApiStatus(active) {
+      const el  = document.getElementById('ytApiStatus');
+      const txt = document.getElementById('ytApiStatusText');
+      if (!el || !txt) return;
+      el.className  = 'api-status ' + (active ? 'active' : 'inactive');
+      txt.textContent = active ? t('apiKeyActive') : t('apiNoKey');
+    }
+
+    // ============================================================
+    // KOL FINDER — COUNTRY HELPERS
+    // ============================================================
+    const COUNTRY_CODE_MAP = {
+      'US':{ name:'USA',         flag:'🇺🇸' }, 'VN':{ name:'Vietnam',     flag:'🇻🇳' },
+      'SG':{ name:'Singapore',   flag:'🇸🇬' }, 'KR':{ name:'South Korea', flag:'🇰🇷' },
+      'JP':{ name:'Japan',       flag:'🇯🇵' }, 'CN':{ name:'China',       flag:'🇨🇳' },
+      'TH':{ name:'Thailand',    flag:'🇹🇭' }, 'ID':{ name:'Indonesia',   flag:'🇮🇩' },
+      'PH':{ name:'Philippines', flag:'🇵🇭' }, 'IN':{ name:'India',       flag:'🇮🇳' },
+      'GB':{ name:'UK',          flag:'🇬🇧' }, 'DE':{ name:'Germany',     flag:'🇩🇪' },
+      'AE':{ name:'UAE',         flag:'🇦🇪' }, 'TR':{ name:'Turkey',      flag:'🇹🇷' },
+      'BR':{ name:'Brazil',      flag:'🇧🇷' }, 'RU':{ name:'Russia',      flag:'🇷🇺' },
+      'NG':{ name:'Nigeria',     flag:'🇳🇬' }, 'AU':{ name:'Australia',   flag:'🇦🇺' },
+      'CA':{ name:'Canada',      flag:'🇨🇦' }, 'FR':{ name:'France',      flag:'🇫🇷' },
+      'ES':{ name:'Spain',       flag:'🇪🇸' }, 'IT':{ name:'Italy',       flag:'🇮🇹' },
+      'NL':{ name:'Netherlands', flag:'🇳🇱' }, 'PK':{ name:'Pakistan',    flag:'🇵🇰' },
+      'MY':{ name:'Malaysia',    flag:'🇲🇾' }, 'UA':{ name:'Ukraine',     flag:'🇺🇦' },
+    };
+
+    const COUNTRY_NAME_TO_CODE = Object.fromEntries(
+      Object.entries(COUNTRY_CODE_MAP).map(([code, v]) => [v.name, code])
+    );
+
+    function getCountryFromCode(code) {
+      return COUNTRY_CODE_MAP[code] || { name: code || '', flag: code ? '🌐' : '' };
+    }
+
+    // ============================================================
+    // KOL FINDER — YOUTUBE HELPERS
+    // ============================================================
+    function getYtTier(subs) {
+      if (subs >= 1_000_000) return 'Mega';
+      if (subs >= 100_000)   return 'Macro';
+      if (subs >= 10_000)    return 'Micro';
+      return 'Nano';
+    }
+
+    function fmtSubs(n) {
+      if (n >= 1_000_000) return (n / 1_000_000).toFixed(1).replace(/\.0$/, '') + 'M';
+      if (n >= 1_000)     return (n / 1_000).toFixed(1).replace(/\.0$/, '') + 'K';
+      return String(n);
+    }
+
+    function estimateYtRate(subs) {
+      if (subs >= 1_000_000) return '$5,000–$20,000/video';
+      if (subs >= 100_000)   return '$500–$5,000/video';
+      if (subs >= 10_000)    return '$100–$500/video';
+      return '$50–$100/video';
+    }
+
+    function estimateYtTrust(subs, videos, views) {
+      let score = 40;
+      if (subs > 0)    score += Math.min(30, Math.log10(subs + 1) * 5);
+      if (videos > 50) score += 10;
+      if (videos > 200) score += 5;
+      if (views > 0 && subs > 0 && views / subs > 10) score += 10;
+      if (videos > 0 && subs > 0)  score += 5;
+      return Math.min(95, Math.round(score));
+    }
+
+    // ============================================================
     // KOL FINDER — FIND KOLS (MAIN)
     // ============================================================
     async function findKols() {
-      const apiKey = getApiKey();
-      if (!apiKey) { showToast(t('kolNeedKey'), 'error'); return; }
+      const ytKey = getYtApiKey();
+      if (!ytKey) {
+        showToast(t('kolYtNoKey'), 'error');
+        document.getElementById('kolYtApiKey')?.focus();
+        return;
+      }
 
       const f = getKolFilters();
-      if (!f.categories.length && !f.platforms.length && !f.keywords) {
+      if (!f.keywords && !f.categories.length) {
         showToast(t('kolNeedFilter'), 'error');
         return;
       }
@@ -5009,13 +5153,8 @@ Guidelines:
       document.getElementById('kolResults').classList.remove('active');
 
       try {
-        const list = await callClaudeForKols(f, apiKey);
-        // Normalise: strip any leading @ from handles, build profileUrl
-        list.forEach(k => {
-          k.handle = (k.handle || '').replace(/^@/, '');
-          k.profileUrl = getProfileUrl(k.platform, k.handle);
-        });
-        kolData = list;
+        const list = await searchYouTubeChannels(f, ytKey);
+        kolData    = list;
         kolSelected = [];
         renderKolResults(list, f);
       } catch (err) {
@@ -5028,83 +5167,116 @@ Guidelines:
     }
 
     // ============================================================
-    // KOL FINDER — CLAUDE API CALL
+    // KOL FINDER — YOUTUBE DATA API v3
     // ============================================================
-    async function callClaudeForKols(f, apiKey) {
-      const filterDesc = [
-        f.keywords     ? `Keywords: ${f.keywords}` : '',
-        f.categories.length ? `Categories: ${f.categories.join(', ')}` : '',
-        f.platforms.length  ? `Platforms: ${f.platforms.join(', ')}` : '',
-        f.tiers.length      ? `Follower tiers: ${f.tiers.join(', ')}` : '',
-        f.minF || f.maxF    ? `Follower range: ${f.minF||'any'} – ${f.maxF||'any'}` : '',
-        f.countries.length  ? `Countries: ${f.countries.join(', ')}` : '',
-        f.desc              ? `Additional: ${f.desc}` : '',
-      ].filter(Boolean).join('\n');
+    async function searchYouTubeChannels(f, ytKey) {
+      // Build search query: keywords + categories
+      const queryParts = [f.keywords, ...f.categories].filter(Boolean);
+      const query = queryParts.join(' ') || 'crypto web3';
 
-      const prompt = `You are a Web3 KOL intelligence engine. Generate representative KOL profiles for research purposes based on the filters below.
+      // Relevance language from first selected country
+      const langMap = { VN:'vi', JP:'ja', KR:'ko', CN:'zh-Hans', DE:'de', BR:'pt', FR:'fr', RU:'ru' };
+      const firstCode = f.countries.length ? (COUNTRY_NAME_TO_CODE[f.countries[0]] || '') : '';
+      const rlang = langMap[firstCode] || 'en';
 
-${filterDesc}
+      const maxR = Math.min(50, f.count || 20);
 
-Generate exactly ${f.count} representative KOL profiles. These are clearly labeled research reference profiles — not guaranteed real accounts. Return ONLY a valid JSON array (no markdown, no explanation):
-[{
-  "name": "Display Name",
-  "handle": "username_without_at",
-  "platform": "Twitter|YouTube|Telegram|Instagram|TikTok|Discord",
-  "followers": 125000,
-  "followersDisplay": "125K",
-  "tier": "Nano|Micro|Macro|Mega",
-  "category": ["DeFi", "Trading"],
-  "country": "Vietnam",
-  "countryFlag": "🇻🇳",
-  "engagement": "3.2%",
-  "language": "Vietnamese/English",
-  "bio": "1-line description of their content niche and style",
-  "bookingTier": "Budget|Standard|Premium|Elite",
-  "estimatedRate": "$200-500/post",
-  "trustScore": 85
-}]
+      // Step 1 — Search for channels
+      const searchUrl = new URL('https://www.googleapis.com/youtube/v3/search');
+      searchUrl.searchParams.set('part', 'snippet');
+      searchUrl.searchParams.set('q', query);
+      searchUrl.searchParams.set('type', 'channel');
+      searchUrl.searchParams.set('maxResults', String(maxR));
+      searchUrl.searchParams.set('relevanceLanguage', rlang);
+      searchUrl.searchParams.set('key', ytKey);
 
-Rules:
-- handle must be plain username WITHOUT the @ symbol (e.g. "crypto_analyst_vn" not "@crypto_analyst_vn")
-- Generate plausible representative profiles matching the filters — these are examples, not verified real accounts
-- Mix different tiers and styles within each niche
-- Ensure geographic and platform diversity when filters allow
-- trustScore 0-100: based on engagement quality, consistency, niche authority, no rug-promo history
-- Tier: Nano=1K-10K, Micro=10K-100K, Macro=100K-1M, Mega=1M+
-- estimatedRate scales with follower count and engagement rate
-- If no platform filter, spread across multiple platforms
-- Return ONLY the JSON array, no profileUrl field needed`;
-
-      const resp = await fetch('https://api.anthropic.com/v1/messages', {
-        method: 'POST',
-        headers: {
-          'Content-Type': 'application/json',
-          'x-api-key': apiKey,
-          'anthropic-version': '2023-06-01',
-          'anthropic-dangerous-direct-browser-access': 'true'
-        },
-        body: JSON.stringify({
-          model: 'claude-sonnet-4-20250514',
-          max_tokens: 8000,
-          messages: [{ role: 'user', content: prompt }]
-        })
-      });
-
-      if (!resp.ok) {
-        const errData = await resp.json().catch(() => ({}));
-        throw new Error(errData.error?.message || `API error ${resp.status}`);
+      const searchResp = await fetch(searchUrl.toString());
+      if (!searchResp.ok) {
+        const err = await searchResp.json().catch(() => ({}));
+        if (searchResp.status === 403) throw new Error(t('kolYtQuota'));
+        if (searchResp.status === 400) throw new Error('Invalid YouTube API Key. Please check and try again.');
+        throw new Error(err.error?.message || `YouTube API error ${searchResp.status}`);
       }
 
-      const data = await resp.json();
-      const raw  = data.content?.[0]?.text || '';
+      const searchData = await searchResp.json();
+      const items = searchData.items || [];
+      if (!items.length) throw new Error(t('kolYtNoResults'));
 
-      let jsonStr = raw.trim();
-      const fence = jsonStr.match(/```(?:json)?\s*([\s\S]*?)\s*```/);
-      if (fence) jsonStr = fence[1];
-      const arrMatch = jsonStr.match(/\[[\s\S]*\]/);
-      if (arrMatch) jsonStr = arrMatch[0];
+      const channelIds = items.map(i => i.id.channelId).filter(Boolean).join(',');
 
-      return JSON.parse(jsonStr);
+      // Step 2 — Get full channel details (batch)
+      const chUrl = new URL('https://www.googleapis.com/youtube/v3/channels');
+      chUrl.searchParams.set('part', 'snippet,statistics,brandingSettings');
+      chUrl.searchParams.set('id', channelIds);
+      chUrl.searchParams.set('key', ytKey);
+
+      const chResp = await fetch(chUrl.toString());
+      if (!chResp.ok) {
+        const err = await chResp.json().catch(() => ({}));
+        throw new Error(err.error?.message || `YouTube API error ${chResp.status}`);
+      }
+
+      const chData = await chResp.json();
+      const channels = chData.items || [];
+
+      // Step 3 — Map to KOL format
+      let kols = channels.map(ch => {
+        const sn  = ch.snippet    || {};
+        const st  = ch.statistics || {};
+        const subs   = parseInt(st.subscriberCount) || 0;
+        const views  = parseInt(st.viewCount)       || 0;
+        const videos = parseInt(st.videoCount)      || 0;
+
+        const tier       = getYtTier(subs);
+        const countryCode = sn.country || '';
+        const { name: countryName, flag: countryFlag } = getCountryFromCode(countryCode);
+
+        // Build profile URL
+        const customUrl = sn.customUrl || '';
+        const profileUrl = customUrl
+          ? `https://youtube.com/${customUrl}`
+          : `https://youtube.com/channel/${ch.id}`;
+
+        const handle = customUrl || ch.id;
+
+        return {
+          channelId:          ch.id,
+          name:               sn.title || ch.id,
+          handle,
+          platform:           'YouTube',
+          followers:          subs,
+          followersDisplay:   fmtSubs(subs),
+          tier,
+          category:           f.categories.length ? f.categories : ['Web3'],
+          country:            countryName || countryCode || 'Unknown',
+          countryCode,
+          countryFlag,
+          engagement:         '—',
+          estimatedRate:      estimateYtRate(subs),
+          trustScore:         estimateYtTrust(subs, videos, views),
+          bio:                (sn.description || '').slice(0, 120).replace(/\r?\n/g, ' '),
+          thumbnail:          sn.thumbnails?.medium?.url || sn.thumbnails?.default?.url || '',
+          profileUrl,
+          totalViews:         views,
+          totalViewsDisplay:  fmtSubs(views),
+          videoCount:         videos,
+        };
+      }).filter(k => k.followers > 0); // exclude hidden/zero sub channels
+
+      // Step 4 — Client-side filters
+      const minF = f.minF ? parseInt(f.minF) : null;
+      const maxF = f.maxF ? parseInt(f.maxF) : null;
+      if (f.tiers.length)       kols = kols.filter(k => f.tiers.includes(k.tier));
+      if (minF !== null)        kols = kols.filter(k => k.followers >= minF);
+      if (maxF !== null)        kols = kols.filter(k => k.followers <= maxF);
+      if (f.countries.length) {
+        const codes = f.countries.map(n => COUNTRY_NAME_TO_CODE[n]).filter(Boolean);
+        const matched = kols.filter(k => codes.includes(k.countryCode));
+        if (matched.length > 0) kols = matched; // soft filter
+      }
+
+      if (!kols.length) throw new Error(t('kolYtNoResults'));
+      return kols;
     }
 
     // ============================================================
@@ -5146,23 +5318,19 @@ Rules:
     }
 
     function renderKolStats(list) {
-      // Platform breakdown
-      const platCount = {};
-      list.forEach(k => { platCount[k.platform] = (platCount[k.platform] || 0) + 1; });
-      const platStr = Object.entries(platCount)
-        .sort((a,b) => b[1]-a[1])
-        .map(([p,n]) => `${PLATFORM_ICONS[p]||''}${p} ${Math.round(n/list.length*100)}%`)
-        .join(' · ');
-
       // Tier breakdown
       const tierCount = { Nano:0, Micro:0, Macro:0, Mega:0 };
       list.forEach(k => { if (tierCount[k.tier] !== undefined) tierCount[k.tier]++; });
       const tierStr = Object.entries(tierCount).filter(([,n])=>n>0)
         .map(([t,n]) => `${t} ${n}`).join(' · ');
 
-      // Avg engagement
-      const engNums = list.map(k => parseFloat(k.engagement)).filter(n => !isNaN(n));
-      const avgEng = engNums.length ? (engNums.reduce((a,b)=>a+b,0)/engNums.length).toFixed(1)+'%' : '—';
+      // Total subscribers
+      const totalSubs = list.reduce((s, k) => s + (k.followers || 0), 0);
+
+      // Avg views per channel
+      const avgViews = list.length
+        ? Math.round(list.reduce((s, k) => s + (k.totalViews || 0), 0) / list.length)
+        : 0;
 
       document.getElementById('kolStatsBar').innerHTML = `
         <div class="kol-stat-card">
@@ -5170,9 +5338,8 @@ Rules:
           <div class="kol-stat-value">${list.length}</div>
         </div>
         <div class="kol-stat-card">
-          <div class="kol-stat-label">${t('kolStatPlatforms')}</div>
-          <div class="kol-stat-value" style="font-size:14px;">${Object.keys(platCount).length}</div>
-          <div class="kol-stat-breakdown">${platStr}</div>
+          <div class="kol-stat-label">${t('kolStatTotalSubs')}</div>
+          <div class="kol-stat-value">${fmtSubs(totalSubs)}</div>
         </div>
         <div class="kol-stat-card">
           <div class="kol-stat-label">${t('kolStatTiers')}</div>
@@ -5180,8 +5347,8 @@ Rules:
           <div class="kol-stat-breakdown">${tierStr}</div>
         </div>
         <div class="kol-stat-card">
-          <div class="kol-stat-label">${t('kolStatAvgEng')}</div>
-          <div class="kol-stat-value">${avgEng}</div>
+          <div class="kol-stat-label">${t('kolStatAvgViews')}</div>
+          <div class="kol-stat-value">${fmtSubs(avgViews)}</div>
         </div>
       `;
     }
@@ -5189,42 +5356,31 @@ Rules:
     function renderKolTable(list) {
       const sorted = sortKolList([...list], currentKolSort);
       document.getElementById('kolTableBody').innerHTML = sorted.map((k, i) => {
-        const ts = k.trustScore || 0;
-        const trustClass = ts >= 70 ? 'trust-high' : ts >= 50 ? 'trust-mid' : 'trust-low';
-        const tierClass  = 'tier-' + (k.tier || 'micro').toLowerCase();
-        const isAdded    = kolSelected.some(s => s.handle === k.handle);
-        const icon       = PLATFORM_ICONS[k.platform] || '🌐';
+        const tierClass = 'tier-' + (k.tier || 'micro').toLowerCase();
+        const isAdded   = kolSelected.some(s => s.handle === k.handle);
+        const thumb     = k.thumbnail
+          ? `<img class="kol-avatar" src="${esc(k.thumbnail)}" alt="" loading="lazy" onerror="this.style.display='none'">`
+          : `<div class="kol-avatar" style="display:flex;align-items:center;justify-content:center;font-size:16px;">📺</div>`;
 
-        const profileUrl = getProfileUrl(k.platform, k.handle);
-        const cleanHandle = (k.handle || '').replace(/^@/, '');
-
-        return `<tr id="kol-row-${i}" data-name="${esc(k.name)}" data-handle="${esc(cleanHandle)}" data-platform="${esc(k.platform)}" data-country="${esc(k.country)}">
+        return `<tr id="kol-row-${i}" data-name="${esc(k.name)}" data-handle="${esc(k.handle)}" data-platform="YouTube" data-country="${esc(k.country)}">
           <td class="kol-num">${i + 1}</td>
           <td>
-            <div class="kol-name-cell">
-              <a class="kol-name-link" href="${esc(profileUrl)}" target="_blank" rel="noopener noreferrer">
-                ${esc(k.name)} <span class="link-icon">🔗</span>
-              </a>
-              <span class="kol-handle">@${esc(cleanHandle)}</span>
+            <div class="kol-channel-cell">
+              ${thumb}
+              <div class="kol-name-cell">
+                <a class="kol-name-link" href="${esc(k.profileUrl)}" target="_blank" rel="noopener noreferrer">
+                  ${esc(k.name)} <span class="link-icon">🔗</span>
+                </a>
+                <span class="kol-handle" style="font-size:11px;color:var(--text-dim);">${esc(k.handle)}</span>
+              </div>
             </div>
           </td>
-          <td>
-            <div class="kol-platform-cell">
-              <span class="platform-icon">${icon}</span>
-              <span>${esc(k.platform)}</span>
-            </div>
-          </td>
-          <td style="font-weight:600;">${esc(k.followersDisplay || k.followers?.toLocaleString() || '—')}</td>
+          <td style="font-weight:600;">${esc(k.followersDisplay)}</td>
+          <td style="color:var(--text-m);font-size:12px;">${esc(k.totalViewsDisplay || fmtSubs(k.totalViews))}</td>
+          <td style="color:var(--text-m);font-size:12px;">${(k.videoCount||0).toLocaleString()}</td>
+          <td>${esc(k.countryFlag)} ${esc(k.country)}</td>
           <td><span class="tier-badge ${tierClass}">${esc(k.tier)}</span></td>
-          <td>${esc(k.countryFlag || '')} ${esc(k.country)}</td>
-          <td style="color:var(--cyan);">${esc(k.engagement)}</td>
           <td style="font-size:12px;color:var(--text-m);">${esc(k.estimatedRate)}</td>
-          <td>
-            <div class="trust-wrap">
-              <div class="trust-bar-bg"><div class="trust-bar-fill ${trustClass}" style="width:${ts}%"></div></div>
-              <span class="trust-num ${trustClass}">${ts}</span>
-            </div>
-          </td>
           <td>
             <button class="btn-add-kol ${isAdded ? 'added' : ''}" id="kol-add-btn-${i}"
               onclick="addKolToList(${i})" ${isAdded ? 'disabled' : ''}>
@@ -5237,24 +5393,23 @@ Rules:
 
     function sortKolList(list, by) {
       return list.sort((a, b) => {
-        if (by === 'followers')  return (b.followers  || 0) - (a.followers  || 0);
-        if (by === 'engagement') return (parseFloat(b.engagement) || 0) - (parseFloat(a.engagement) || 0);
-        if (by === 'trust')      return (b.trustScore || 0) - (a.trustScore || 0);
+        if (by === 'followers') return (b.followers  || 0) - (a.followers  || 0);
+        if (by === 'views')     return (b.totalViews || 0) - (a.totalViews || 0);
+        if (by === 'videos')    return (b.videoCount || 0) - (a.videoCount || 0);
         return 0;
       });
     }
 
     function sortKolTable(by) {
       currentKolSort = by;
-      // Update header arrows
       document.querySelectorAll('.kol-table th').forEach(th => th.classList.remove('sorted'));
-      const active = [...document.querySelectorAll('.kol-table th')].find(th => {
-        const txt = th.getAttribute('data-i18n') || '';
-        return (by === 'followers' && txt === 'kolColFollowers') ||
-               (by === 'engagement' && txt === 'kolColEngagement') ||
-               (by === 'trust' && txt === 'kolColTrust');
-      });
-      if (active) active.classList.add('sorted');
+      const i18nKey = by === 'followers' ? 'kolColFollowers'
+                    : by === 'views'     ? 'kolColViews'
+                    : by === 'videos'    ? 'kolColVideos' : '';
+      if (i18nKey) {
+        const th = document.querySelector(`.kol-table th[data-i18n="${i18nKey}"]`);
+        if (th) th.classList.add('sorted');
+      }
       renderKolTable(kolData);
     }
 
@@ -5325,7 +5480,7 @@ Rules:
             <span class="platform-icon" style="font-size:16px;">${icon}</span>
             <div style="flex:1;min-width:0;">
               <div class="kol-sel-name">${esc(k.name)} <span class="kol-sel-handle">${esc(k.handle)}</span></div>
-              <div class="kol-sel-meta">${esc(k.countryFlag||'')} ${esc(k.country)} · ${esc(k.followersDisplay)} · ${esc(k.estimatedRate)}</div>
+              <div class="kol-sel-meta">${esc(k.countryFlag||'')} ${esc(k.country)} · ${esc(k.followersDisplay)} subs · ${esc(k.estimatedRate)}</div>
             </div>
             <button class="btn-remove-kol" title="${t('kolRemove')}" onclick="removeKolFromList('${k.handle.replace(/'/g,"\\'")}')">&#x2715;</button>
           </div>
@@ -5354,22 +5509,20 @@ Rules:
       const wb = XLSX.utils.book_new();
 
       // ── Sheet 1: KOL List ──
-      const headers = ['No.','Name','Handle','Platform','Followers','Tier',
-        'Category','Country','Engagement Rate','Est. Booking Rate','Trust Score',
-        'Profile URL','Bio','Notes'];
+      const headers = ['No.','Channel Name','Handle / URL','Subscribers',
+        'Total Views','Videos','Tier','Country','Est. Booking Rate',
+        'Profile URL','Channel Description','Notes'];
 
       const rows = kolSelected.map((k, i) => [
         i + 1,
         k.name,
         k.handle,
-        k.platform,
-        k.followers || k.followersDisplay || '',
+        k.followers || 0,
+        k.totalViews || 0,
+        k.videoCount || 0,
         k.tier,
-        (k.category || []).join(', '),
         (k.countryFlag || '') + ' ' + (k.country || ''),
-        k.engagement,
         k.estimatedRate,
-        k.trustScore,
         k.profileUrl || '',
         k.bio || '',
         ''
@@ -5405,9 +5558,8 @@ Rules:
 
       // Column widths
       ws1['!cols'] = [
-        {wch:5},{wch:22},{wch:20},{wch:12},{wch:12},{wch:10},
-        {wch:24},{wch:16},{wch:16},{wch:18},{wch:12},
-        {wch:36},{wch:44},{wch:20}
+        {wch:5},{wch:28},{wch:28},{wch:14},{wch:14},{wch:10},
+        {wch:10},{wch:16},{wch:20},{wch:40},{wch:50},{wch:20}
       ];
 
       // Freeze header
@@ -5460,6 +5612,7 @@ Rules:
     // INIT
     // ============================================================
     loadApiKey();
+    loadYtApiKey();
     applyLang();  // Apply saved language preference on page load
     document.getElementById('printDate').textContent = t('generatedLabel') + ' ' + new Date().toLocaleString();
 
